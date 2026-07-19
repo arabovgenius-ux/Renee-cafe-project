@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Renée Café — французское кафе в Алматы</title>
+<meta name="description" content="Renée Café — французское кафе в Алматы. Завтраки, авторские напитки, десерты и выпечка.">
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<!-- Lenis -->
+<script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
+
+<!-- Barba.js (included per request — not wired, this is a single-page site; see note) -->
+<script src="https://unpkg.com/@barba/core"></script>
+
+<!-- SplitType -->
+<script src="https://unpkg.com/split-type"></script>
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          cream:   '#F2ECE0',
+          paper:   '#FBF8F2',
+          ink:     '#211D19',
+          burgundy:'#6E2A30',
+          burgundydark:'#4E1D22',
+          gold:    '#AE8A4E',
+          olive:   '#767A50',
+          line:    '#D8CFBE',
+        },
+        fontFamily: {
+          display: ['Fraunces','serif'],
+          body: ['Manrope','sans-serif'],
+          mono: ['IBM Plex Mono','monospace'],
+        },
+      }
+    }
+  }
+</script>
+
+<style>
+  html, body { background:#F2ECE0; }
+  * { scrollbar-width: thin; scrollbar-color: #6E2A30 #F2ECE0; }
+  body::-webkit-scrollbar { width: 8px; }
+  body::-webkit-scrollbar-thumb { background: #6E2A30; }
+  body::-webkit-scrollbar-track { background: #F2ECE0; }
+
+  ::selection { background: #6E2A30; color: #F2ECE0; }
+
+  .bird { filter: brightness(0) saturate(100%); }
+  .bird-light { filter: brightness(0) saturate(100%) invert(1); }
+
+  .leader {
+    flex: 1 1 auto;
+    border-bottom: 1.5px dotted #B7ADA0;
+    margin: 0 .6rem;
+    transform: translateY(-4px);
+    min-width: 20px;
+  }
+
+  .menu-tab-btn.active {
+    background: #211D19;
+    color: #F2ECE0;
+  }
+  .cat-chip.active {
+    background: #6E2A30;
+    color: #F2ECE0;
+    border-color: #6E2A30;
+  }
+
+  .hero-img, .about-img, .gallery-img {
+    will-change: transform;
+  }
+
+  .split-line { overflow: hidden; }
+
+  .fade-up { opacity: 0; transform: translateY(28px); }
+
+  .item-row { opacity: 0; transform: translateY(10px); }
+
+  .nav-link { position: relative; }
+  .nav-link::after {
+    content: '';
+    position: absolute; left: 0; bottom: -4px;
+    height: 1px; width: 0%;
+    background: currentColor;
+    transition: width .35s ease;
+  }
+  .nav-link:hover::after { width: 100%; }
+
+  .marble-line {
+    background: linear-gradient(90deg, transparent, #AE8A4E, transparent);
+    height: 1px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+
+<body class="bg-cream text-ink font-body antialiased">
+
+<!-- ============ NAV ============ -->
+<header id="site-nav" class="fixed top-0 left-0 w-full z-50 transition-colors duration-500">
+  <div class="max-w-7xl mx-auto px-6 md:px-10 flex items-center justify-between py-4">
+    <a href="#top" class="flex items-center gap-3 group">
+      <img src="https://raw.githubusercontent.com/arabovgenius-ux/Renee-cafe-project/main/IMG_4612%20%28%D1%84%D0%BE%D0%BD%20%D1%83%D0%B4%D0%B0%D0%BB%D0%B5%D0%BD%29.png" alt="Renée Café" class="w-8 h-8 bird-light nav-logo-img" />
+      <span class="font-display italic text-xl tracking-wide nav-logo-text">Renée</span>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-10 text-sm uppercase tracking-[0.15em] nav-links">
+      <a href="#menu" class="nav-link">Меню</a>
+      <a href="#gallery" class="nav-link">Атмосфера</a>
+      <a href="#contacts" class="nav-link">Контакты</a>
+    </nav>
+
+    <a href="https://wa.me/77771112024" target="_blank" rel="noopener"
+       class="hidden md:inline-flex items-center gap-2 border border-current rounded-full px-5 py-2 text-xs uppercase tracking-[0.15em] nav-cta hover:bg-current hover:text-cream transition-colors duration-300">
+      Забронировать
+    </a>
+
+    <button id="mobile-menu-btn" class="md:hidden nav-links text-2xl leading-none">☰</button>
+  </div>
+
+  <!-- mobile menu -->
+  <div id="mobile-menu" class="hidden md:hidden bg-ink text-cream px-6 pb-6 pt-2 flex flex-col gap-4 text-sm uppercase tracking-[0.15em]">
+    <a href="#menu">Меню</a>
+    <a href="#gallery">Атмосфера</a>
+    <a href="#contacts">Контакты</a>
+    <a href="https://wa.me/77771112024" class="text-gold">Забронировать · WhatsApp</a>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section id="top" class="relative h-[100svh] w-full overflow-hidden flex items-end md:items-center">
+  <div class="absolute inset-0 overflow-hidden">
+    <img src="https://raw.githubusercontent.com/arabovgenius-ux/Renee-cafe-project/main/IMG_4613.jpeg"
+         alt="Кондитерская витрина Renée Café"
+         class="hero-img w-full h-[130%] object-cover object-center scale-110" />
+    <div class="absolute inset-0 bg-gradient-to-t from-[#211D19] via-[#211D19]/40 to-[#4E1D22]/60"></div>
+    <div class="absolute inset-0 bg-[#4E1D22]/20 mix-blend-multiply"></div>
+  </div>
+
+  <div class="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-10 pb-16 md:pb-0 text-cream">
+    <p class="hero-eyebrow font-mono text-xs md:text-sm tracking-[0.35em] uppercase text-gold mb-6 opacity-0">
+      Café français · Алматы
+    </p>
+    <h1 class="hero-title font-display italic font-light leading-[0.9] text-[16vw] md:text-[9vw]">
+      Renée
+    </h1>
+    <p class="hero-sub font-display text-2xl md:text-4xl tracking-[0.2em] uppercase mt-2 opacity-0">Café</p>
+    <p class="hero-tagline fade-up mt-8 max-w-md font-body text-base md:text-lg text-cream/80 leading-relaxed">
+      Утро в северном стиле, полдень по-средиземноморски и вечер, достойный Парижа — под одной крышей в Алматы.
+    </p>
+  </div>
+
+  <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-cream/70 text-xs uppercase tracking-[0.3em] flex flex-col items-center gap-2 fade-up">
+    <span>Листайте</span>
+    <span class="block w-px h-8 bg-cream/50 scroll-line"></span>
+  </div>
+</section>
+
+<!-- ============ ABOUT STRIP ============ -->
+<section class="relative py-24 md:py-36 px-6 md:px-10 overflow-hidden">
+  <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 md:gap-20 items-center">
+    <div class="relative h-[70vh] md:h-[80vh] overflow-hidden rounded-sm order-2 md:order-1">
+      <img src="https://raw.githubusercontent.com/arabovgenius-ux/Renee-cafe-project/main/IMG_4614.jpeg"
+           alt="Зал Renée Café с ботанической росписью"
+           class="about-img w-full h-[130%] object-cover object-center" />
+    </div>
+    <div class="order-1 md:order-2 fade-up">
+      <p class="font-mono text-xs tracking-[0.3em] uppercase text-burgundy mb-6">О месте</p>
+      <h2 class="font-display text-3xl md:text-5xl leading-tight mb-8">
+        Французский нрав,<br class="hidden md:block"> собранный из деталей
+      </h2>
+      <p class="text-ink/70 leading-relaxed text-base md:text-lg mb-6">
+        Мраморные стойки, ручная роспись потолка, латунный свет и тёплое дерево — Renée Café устроено как квартира
+        парижского друга, который умеет готовить. Здесь завтракают допоздна, обедают не спеша и задерживаются за
+        бокалом вина дольше, чем планировали.
+      </p>
+      <p class="text-ink/70 leading-relaxed text-base md:text-lg">
+        Меню меняется по сезону, но характер — никогда: скандинавская сдержанность утром, средиземноморская
+        щедрость днём и бистро-уют вечером.
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="max-w-7xl mx-auto px-6 md:px-10"><div class="marble-line"></div></div>
+
+<!-- ============ MENU ============ -->
+<section id="menu" class="py-20 md:py-28 px-6 md:px-10">
+  <div class="max-w-7xl mx-auto">
+
+    <div class="mb-12 md:mb-16 fade-up">
+      <p class="font-mono text-xs tracking-[0.3em] uppercase text-burgundy mb-4">À la carte</p>
+      <h2 class="font-display text-4xl md:text-6xl italic">Меню</h2>
+    </div>
+
+    <!-- top-level tabs -->
+    <div class="flex flex-wrap gap-3 mb-8 fade-up" id="menu-tabs">
+      <button data-menu="main" class="menu-tab-btn active border border-ink rounded-full px-5 py-2 text-xs md:text-sm uppercase tracking-[0.12em] transition-colors duration-300">Основное меню</button>
+      <button data-menu="bar" class="menu-tab-btn border border-ink rounded-full px-5 py-2 text-xs md:text-sm uppercase tracking-[0.12em] transition-colors duration-300">Барное меню</button>
+      <button data-menu="desserts" class="menu-tab-btn border border-ink rounded-full px-5 py-2 text-xs md:text-sm uppercase tracking-[0.12em] transition-colors duration-300">Десерты / Выпечка</button>
+    </div>
+
+    <!-- category chips -->
+    <div class="flex gap-2 overflow-x-auto pb-3 mb-10 fade-up" id="cat-chips" style="scrollbar-width:none;">
+    </div>
+
+    <!-- items -->
+    <div id="menu-items" class="grid md:grid-cols-2 gap-x-16 gap-y-10">
+    </div>
+
+  </div>
+</section>
+
+<div class="max-w-7xl mx-auto px-6 md:px-10"><div class="marble-line"></div></div>
+
+<!-- ============ GALLERY ============ -->
+<section id="gallery" class="py-20 md:py-28 overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6 md:px-10 mb-12 fade-up">
+    <p class="font-mono text-xs tracking-[0.3em] uppercase text-burgundy mb-4">Внутри</p>
+    <h2 class="font-display text-4xl md:text-6xl italic">Атмосфера</h2>
+  </div>
+
+  <div class="flex gap-4 md:gap-6 px-6 md:px-10 overflow-x-hidden">
+    <div class="gallery-item flex-shrink-0 w-[70vw] md:w-[26vw] h-[52vw] md:h-[34vw] overflow-hidden rounded-sm translate-y-8">
+      <img src="https://raw.githubusercontent.com/arabovgenius-ux/Renee-cafe-project/main/IMG_4615.jpeg" class="gallery-img w-full h-full object-cover" alt="Зал Renée Café">
+    </div>
+    <div class="gallery-item flex-shrink-0 w-[70vw] md:w-[26vw] h-[52vw] md:h-[34vw] overflow-hidden rounded-sm -translate-y-8">
+      <img src="https://raw.githubusercontent.com/arabovgenius-ux/Renee-cafe-project/main/IMG_4616.jpeg" class="gallery-img w-full h-full object-cover" alt="Уютный уголок Renée Café">
+    </div>
+    <div class="gallery-item flex-shrink-0 w-[70vw] md:w-[26vw] h-[52vw] md:h-[34vw] overflow-hidden rounded-sm translate-y-8">
+      <img src="https://raw.githubusercontent.com/arabovgenius-ux/Renee-cafe-project/main/IMG_4617.jpeg" class="gallery-img w-full h-full object-cover" alt="Общий вид зала Renée Café">
+    </div>
+    <div class="gallery-item flex-shrink-0 w-[70vw] md:w-[26vw] h-[52vw] md:h-[34vw] overflow-hidden rounded-sm -translate-y-8">
+      <img src="https://raw.githubusercontent.com/arabovgenius-ux/Renee-cafe-project/main/IMG_4618.jpeg" class="gallery-img w-full h-full object-cover" alt="Барная тележка Renée Café">
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACTS / FOOTER ============ -->
+<footer id="contacts" class="relative bg-ink text-cream py-20 md:py-28 px-6 md:px-10 overflow-hidden">
+  <div class="absolute inset-0 opacity-[0.04] pointer-events-none flex items-center justify-center">
+    <img src="https://raw.githubusercontent.com/arabovgenius-ux/Renee-cafe-project/main/IMG_4612%20%28%D1%84%D0%BE%D0%BD%20%D1%83%D0%B4%D0%B0%D0%BB%D0%B5%D0%BD%29.png" class="bird-light w-[60vw] max-w-2xl" alt="">
+  </div>
+
+  <div class="relative max-w-7xl mx-auto">
+    <div class="grid md:grid-cols-2 gap-16 items-end mb-16">
+      <h2 class="font-display italic text-5xl md:text-7xl leading-none fade-up">Ждём вас<br>к столу</h2>
+      <p class="fade-up text-cream/70 text-base md:text-lg leading-relaxed">
+        Заглядывайте на завтрак, задерживайтесь на ужин. Столик проще всего забронировать
+        сообщением в WhatsApp или Instagram.
+      </p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-10 border-t border-cream/15 pt-10">
+      <div class="fade-up">
+        <p class="font-mono text-xs tracking-[0.25em] uppercase text-gold mb-3">Адрес</p>
+        <a href="https://maps.app.goo.gl/VwtKH5GL8NX7TVk4A?g_st=ic" target="_blank" rel="noopener" class="nav-link inline-block text-cream/90 hover:text-gold transition-colors">
+          Алматы · открыть карту
+        </a>
+      </div>
+      <div class="fade-up">
+        <p class="font-mono text-xs tracking-[0.25em] uppercase text-gold mb-3">Телефон / WhatsApp</p>
+        <a href="https://wa.me/77771112024" target="_blank" rel="noopener" class="nav-link inline-block text-cream/90 hover:text-gold transition-colors">
+          +7 777 111 2024
+        </a>
+      </div>
+      <div class="fade-up">
+        <p class="font-mono text-xs tracking-[0.25em] uppercase text-gold mb-3">Instagram</p>
+        <a href="https://www.instagram.com/renee_almaty" target="_blank" rel="noopener" class="nav-link inline-block text-cream/90 hover:text-gold transition-colors">
+          @renee_almaty
+        </a>
+      </div>
+      <div class="fade-up">
+        <p class="font-mono text-xs tracking-[0.25em] uppercase text-gold mb-3">Завтраки</p>
+        <p class="text-cream/90">Доступны до 16:00</p>
+      </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row items-center justify-between gap-4 mt-16 pt-8 border-t border-cream/10 text-xs text-cream/40 tracking-wide">
+      <span>© Renée Café, Алматы</span>
+      <span class="font-display italic">À bientôt</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   MENU DATA
+========================================================= */
+const menuData = {
+  main: {
+    label: 'Основное меню',
+    categories: [
+      { id:'breakfast', label:'Завтраки', note:'Доступны до 16:00', items:[
+        {n:'Датский завтрак', d:'Хрустящий тартин, взбитое масло, Эмменталь, яйцо-пятиминутка и мортаделла, вишня с лаймом и дукка.', p:'3 890 ₸'},
+        {n:'Шакшука в средиземноморском стиле', d:'Томаты и копчёные оливки, каперсы, фета, яйцо-пашот и мусс пармезан.', p:'4 390 ₸'},
+        {n:'Французский омлет с мортаделлой', d:'Омлет из трёх яиц со сливками, моцарелла и томаты внутри, мортаделла и дукка.', p:'4 190 ₸'},
+        {n:'Фирменный завтрак Renée', d:'Круассан с трюфельным бешамелем и камамбером, яйцо 6 минут, тартин, скрембл со страчателлой.', variants:[{l:'Мортаделла',p:'6 490 ₸'},{l:'Лосось',p:'7 190 ₸'}]},
+        {n:'Английский завтрак', d:'Глазунья с конской колбаской, картофельный гратен, фасоль, грибы демигляз, зерновая горчица.', p:'5 290 ₸'},
+        {n:'Скрэмбл со сладким угрем', d:'Скрембл на сливочном масле, копчёный угорь в соусе унаги, страчателла, микс кунжута.', p:'4 990 ₸'},
+        {n:'Скрэмбл с риетом из лосося', d:'Скрембл с пармезаном, риет из лосося и черемши, бакинские томаты, тартин на закваске.', p:'4 690 ₸'},
+        {n:'Авокадо-тост', d:'Бородинский хлеб с инжиром, мусс из креметты, авокадо, редис и щавель.', variants:[{l:'база',p:'2 990 ₸'},{l:'+ атлантический лосось',p:'2 390 ₸'}]},
+        {n:'Картофельные драники с атлантическим лососем', d:'Драники без лука, слабосолёный лосось, яйцо-пашот, сметанковый соус, эдамаме.', p:'5 590 ₸'},
+        {n:'Бенедикт на бриоши с атлантическим лососем', d:'Обжаренная бриошь, яйцо-пашот, соус голландез, слабосолёный лосось, эдамаме.', p:'5 490 ₸'},
+        {n:'Круассан со скрэмблом и мортаделлой', d:'Хрустящий круассан, скрембл, моцарелла, мортаделла, пармезан и дукка.', p:'3 590 ₸'},
+        {n:'Завтрак номада', d:'Казы из конины, глазунья, картофельные драники, томатная сальса и соус номад.', p:'3 890 ₸'},
+        {n:'Омлет с креветками в соусе биск', d:'Омлет со сливками, обжаренные креветки в чесночном масле, соус биск.', p:'4 790 ₸', tag:'New'},
+        {n:'Бенедикт на тартине с говяжьей мортаделлой', d:'Тартин на гриле, соус ромеско, яйцо-пашот, голландез, мортаделла, пиклз крем-чиз.', p:'3 990 ₸', tag:'New'},
+        {n:'Брускетта с креветками и страчателлой', d:'Хрустящий тартин-гриль, гуакамоле, креветки конфи, красножильный щавель.', p:'4 890 ₸'},
+      ]},
+      { id:'sweet-breakfast', label:'Сладкие завтраки', items:[
+        {n:'Каша рисовая', d:'Нежная рисовая каша с голубикой, хрустящей карамелью и фисташками.', p:'1 990 ₸'},
+        {n:'Каша овсяная', d:'Овсяная каша с малиной, сублимированными ягодами и вареньем из чёрной смородины.', p:'1 990 ₸'},
+        {n:'Нежные сырники', d:'Из жирного творога, крем англез, сублимированная малина и фисташка.', p:'3 690 ₸'},
+        {n:'Взбитый творог', d:'С кремом англез, тёртым балкаймаком, малиной, фисташкой и классическим канеле.', p:'3 390 ₸'},
+        {n:'Оладьи Renée', d:'Пышные оладьи, крем англез, сублимированная малина, сметана и вишнёвое варенье.', variants:[{l:'база',p:'2 990 ₸'},{l:'+ красная икра',p:'3 490 ₸'},{l:'+ атлантический лосось',p:'2 390 ₸'},{l:'+ креметта',p:'790 ₸'}]},
+        {n:'Френч-тост', d:'Воздушная бриошь с корицей, шарик ванильного мороженого, кокосовая карамель, пекан.', p:'2 890 ₸'},
+      ]},
+      { id:'starters', label:'Стартеры', items:[
+        {n:'Ассорти оливок', d:'Зелёные и розовые оливки со специями, чесноком, болгарским перцем и апельсином.', p:'3 390 ₸'},
+        {n:'Перчики падрон', d:'Испанские перцы на гриле, соус ромеско и тёртый пармезан.', p:'3 990 ₸'},
+        {n:'Фри с трюфелем и пармезаном', d:'Хрустящий картофель фри с пармезаном, трюфельным маслом и айоли.', p:'3 390 ₸'},
+        {n:'Ассорти сыров', d:'Пекорино, Эмменталь, Пармезан 12 месяцев и молодой Камамбер с яблочным чатни.', p:'7 190 ₸'},
+      ]},
+      { id:'snacks', label:'Закуски', items:[
+        {n:'Паштет из куриной печени с яблочным чатни', d:'Печень с вишнёвым вареньем и лаймом, поданная с бриошью.', p:'3 990 ₸'},
+        {n:'Хумус с печеным перцем и фисташками', d:'Нут, тахини и мисо-паста, печёный перец и зелёная сальса.', p:'3 690 ₸'},
+        {n:'Картофельный гратен', d:'Печёный картофель в чесночно-сливочном соусе со сморчками и петрушкой.', p:'4 490 ₸'},
+        {n:'Классический тартар', d:'Говядина, шалот, каперсы, перепелиный желток, мусс пармезан и картофель фри.', p:'5 290 ₸'},
+        {n:'Вителло тоннато', d:'Ростбиф из телятины medium, соус тоннато на тунце, базилик.', p:'4 990 ₸'},
+        {n:'Запеченные перцы с риетом из тунца', d:'Перцы рамиро, соус ромеско, риет из тунца, пармезан и тартин.', p:'4 190 ₸'},
+        {n:'Буррата с ташкентскими томатами', d:'Буррата, сочные томаты, мята и базилик, лёгкий цитрусовый дрессинг.', p:'5 890 ₸', tag:'New'},
+        {n:'Тартар из лосося и гуакамоле', d:'Лосось с шалотом и каперсами, гуакамоле из авокадо, соус понзу.', p:'6 490 ₸', tag:'New'},
+      ]},
+      { id:'salads', label:'Салаты', items:[
+        {n:'Греческий салат', d:'Томаты, огурец, перец, оливки, фета, дрессинг с орегано и печёные крутоны.', p:'4 990 ₸'},
+        {n:'Зеленый салат', d:'Микс салата, фенхель, эдамаме, авокадо, брокколи, соус мисо-креметта.', p:'5 190 ₸'},
+        {n:'Теплый салат с цыплёнком-гриль', d:'Ромейн с виноградом, жареное бедро курицы, микс огурцов, пармезан.', p:'3 590 ₸'},
+        {n:'Оливье с жая', d:'Казахская версия оливье: печёный картофель, жая, горошек, сметана и японский майонез.', p:'3 990 ₸'},
+      ]},
+      { id:'soups', label:'Супы', items:[
+        {n:'Парижский луковый суп', d:'Карамелизированный лук, тимьян, белое вино и портвейн, багет под бешамелем.', p:'3 990 ₸'},
+        {n:'Грибной крем-суп', d:'Вешенки и шампиньоны на сливочной основе, трюфельное масло и сибулет.', p:'3 890 ₸'},
+        {n:'Похлебка из морепродуктов', d:'Мидии, креветки и филе лосося в насыщенном биске.', p:'5 890 ₸'},
+        {n:'Куриный бульон с домашней лапшой', d:'Бедро цыплёнка, домашняя лапша и свежая зелень.', p:'2 790 ₸'},
+      ]},
+      { id:'pasta', label:'Паста', items:[
+        {n:'С трюфелем и орехом пекан в сливочном соусе', d:'Фетуччини, бешамель, камамбер и трюфельная паста, пекан.', p:'4 490 ₸'},
+        {n:'Болоньезе', d:'Фетуччини с говяжьим фаршем, томатами и красным вином, пармезан и базилик.', p:'4 890 ₸'},
+        {n:'С креветками и цукини в сливочном песто', d:'Казаречче, белое вино и ферментированный чили, песто из базилика.', p:'5 890 ₸'},
+        {n:'Качо-э-пепе', d:'Паккери Ригати, соус на курином бульоне и сыре Грана Падано, чёрный перец.', p:'4 190 ₸'},
+        {n:'Ризотто с грибами', d:'Рис арборио, соус качо и коньяк, сморчки, мусс пармезан и пудра из белых грибов.', p:'4 890 ₸'},
+      ]},
+      { id:'mains', label:'Основные блюда', items:[
+        {n:'Нежная куриная грудка с соусом демиглас', d:'Сувид, соус демиглас, морковный крем или пюре, шпинат.', p:'3 990 ₸'},
+        {n:'Шницель из цыпленка с соусом бешамель', d:'В хрустящей панировке, соус бешамель, микс огурцов, соус из петрушки.', p:'4 290 ₸'},
+        {n:'Конские колбаски с картофельным гратеном', d:'Румяные колбаски, гратен, зерновая горчица, грибной глейз.', p:'7 890 ₸'},
+        {n:'Говяжьи щечки по-бургундски', d:'Томлёные в винном соусе, картофельное пюре, шампиньоны демигляз.', p:'6 990 ₸'},
+        {n:'Чизбургер из мраморной говядины', d:'Булочка бриошь, чеддер, карамелизированный лук, соус релиш, фри на выбор.', p:'5 490 ₸'},
+        {n:'Запеченная голень индейки с соусом жу из клюквы', d:'12 часов томления, клюквенный соус жу, морковный крем.', p:'6 590 ₸'},
+        {n:'Стейк из телячьей вырезки под перечным соусом', d:'Картофель фри, перчик падрон, аромат трюфеля, перечный соус.', p:'8 990 ₸'},
+        {n:'Креветки, вонголе и кальмар в чесночном масле', d:'Сливочное масло, чеснок, каперсы, лимон и хрустящий багет.', p:'6 290 ₸'},
+        {n:'Стейк лосося с картофельным пюре и красной икрой', d:'Золотистая корочка, воздушное пюре, шпинатный соус бешамель.', p:'7 890 ₸'},
+        {n:'Рибай PRIME', d:'Зерновой откорм.', p:'7 590 ₸'},
+        {n:'Котлеты из индейки с запеченным картофелем', d:'Бедро индейки, соус демиглас, бейби-картофель, тартар из трёх огурцов.', p:'4 890 ₸', tag:'New'},
+        {n:'Утиная ножка конфи', d:'Томлена в утином жире, запечённая тыква, соус жу с клюквой, чёрный виноград.', p:'6 490 ₸', tag:'New'},
+        {n:'Филе дорадо в соусе бер блан с капустой бок-чой', d:'Хрустящая кожа, соус бёр-блан на рыбном бульоне, лайм.', p:'8 890 ₸', tag:'New'},
+        {n:'Боул с лососем', d:'Киноа, слабосолёный лосось, авокадо, цукини, соус понзу.', p:'5 890 ₸', tag:'New'},
+      ]},
+      { id:'bruschetta', label:'Брускетты', items:[
+        {n:'Брускетта с муссом из баклажана и рикоттой', d:'Томатная сальса, маринованный перец «слеза», базилик.', p:'3 290 ₸'},
+        {n:'Брускетта с ростбифом', d:'Крем рикотты, телячья вырезка, луковый мармелад, соус из петрушки.', p:'4 490 ₸'},
+        {n:'Брускетта с креветками и страчателлой', d:'Гуакамоле, креветки конфи, красножильный щавель.', p:'4 890 ₸'},
+        {n:'Брускетта со сливочным сыром и сладким угрем', d:'Цитрусовый крем, копчёный угорь, соус унаги и тартар из огурца.', p:'по запросу'},
+      ]},
+    ]
+  },
+  bar: {
+    label: 'Барное меню',
+    categories: [
+      { id:'coffee', label:'Кофе', items:[
+        {n:'Эспрессо', d:'', p:'1 290 ₸'},
+        {n:'Американо', d:'', p:'1 390 ₸'},
+        {n:'Батч брю', d:'', variants:[{l:'Средний',p:'1 390 ₸'},{l:'Большой',p:'1 490 ₸'}]},
+        {n:'Флэт уайт', d:'', p:'1 690 ₸'},
+        {n:'Капучино', d:'', variants:[{l:'Средний',p:'1 690 ₸'},{l:'Большой',p:'1 790 ₸'}]},
+        {n:'Латте', d:'', p:'1 790 ₸'},
+        {n:'Альтернативное молоко', d:'Миндальное · Кокосовое · Овсяное · Фундучное · Банановое', p:'890 ₸'},
+        {n:'Дополнительное молоко', d:'Коровье молоко', p:'390 ₸'},
+      ]},
+      { id:'signature-drinks', label:'Авторские напитки', items:[
+        {n:'Мадлен капучино', d:'Молоко, эспрессо, сироп мадлен, цитрусовая пудра.', p:'2 490 ₸'},
+        {n:'Сырный раф с клубничным вареньем', d:'', p:'2 490 ₸'},
+        {n:'Матча лаванда-мед', d:'', p:'2 490 ₸'},
+        {n:'Cafe du poiré', d:'Эспрессо, грушевый домашний ликер, цитрусовый ликер, амаро, ванильная пена.', p:'2 890 ₸'},
+        {n:'Какао с нутеллой', d:'', p:'2 390 ₸'},
+        {n:'Чайник горячего шоколада', d:'', p:'3 790 ₸'},
+        {n:'Колд брю малина-лимон', d:'', p:'2 290 ₸'},
+        {n:'Айс матча клубника', d:'', p:'2 590 ₸'},
+        {n:'Матча-тоник манго-персик', d:'', p:'2 590 ₸'},
+      ]},
+      { id:'lemonades', label:'Лимонады', items:[
+        {n:'Цветочный', d:'', variants:[{l:'200 мл',p:'1 590 ₸'},{l:'700 мл',p:'3 890 ₸'}]},
+        {n:'Сицилийские цитрусы', d:'', variants:[{l:'200 мл',p:'1 590 ₸'},{l:'700 мл',p:'3 890 ₸'}]},
+        {n:'Щавель-яблоко', d:'', variants:[{l:'200 мл',p:'1 590 ₸'},{l:'700 мл',p:'3 890 ₸'}]},
+        {n:'Черника-лаванда', d:'', variants:[{l:'200 мл',p:'1 590 ₸'},{l:'700 мл',p:'3 890 ₸'}]},
+      ]},
+      { id:'fresh', label:'Фреши', items:[
+        {n:'Морковный фреш', d:'', p:'1 990 ₸'},
+        {n:'Яблочный фреш', d:'', p:'2 690 ₸'},
+        {n:'Грейпфрутовый фреш', d:'', p:'2 990 ₸'},
+        {n:'Апельсиновый фреш', d:'', p:'2 690 ₸'},
+      ]},
+      { id:'smoothies', label:'Смузи', items:[
+        {n:'Ягодный', d:'Клубника, малина, голубика, миндальное молоко, топинамбур.', p:'2 990 ₸'},
+        {n:'Зеленый', d:'Авокадо, шпинат, кокосовая вода, мёд.', p:'3 290 ₸'},
+        {n:'Тропический', d:'Кокос, личи, ананас, банан.', p:'2 990 ₸'},
+      ]},
+      { id:'teas', label:'Чаи', items:[
+        {n:'Ассам', d:'', p:'2 190 ₸'},
+        {n:'Эрл грей', d:'', p:'2 190 ₸'},
+        {n:'Сенча', d:'', p:'2 190 ₸'},
+        {n:'Жасмин', d:'', p:'2 190 ₸'},
+        {n:'Молочный улун', d:'', p:'2 190 ₸'},
+        {n:'Дикая вишня', d:'', p:'2 190 ₸'},
+        {n:'Травяной', d:'', p:'2 190 ₸'},
+        {n:'Гречишный', d:'', p:'2 190 ₸'},
+        {n:'Пандановый чай', d:'', p:'2 190 ₸'},
+      ]},
+      { id:'signature-teas', label:'Авторские чаи', items:[
+        {n:'Грейпфрут-розовый перец-жасмин', d:'', p:'2 990 ₸'},
+        {n:'Облепиха-маракуйя-ваниль', d:'', p:'2 990 ₸'},
+        {n:'Смородина-анис-яблоко', d:'', p:'2 990 ₸'},
+        {n:'Персик-мята-османтус', d:'', p:'2 990 ₸'},
+      ]},
+      { id:'soft', label:'Софт дринкс', items:[
+        {n:'Coca-Cola Classic', d:'', p:'1 290 ₸'},
+        {n:'Coca-Cola Zero Sugar', d:'', p:'1 290 ₸'},
+        {n:'Fanta', d:'', p:'1 290 ₸'},
+        {n:'Sprite', d:'', p:'1 290 ₸'},
+        {n:'Schweppes', d:'', p:'1 690 ₸'},
+        {n:'Тоник Fava', d:'200 мл', p:'2 790 ₸'},
+        {n:'Red Bull', d:'250 мл', p:'2 290 ₸'},
+        {n:'Сок PAGO', d:'Яблоко · Томат · Вишня · Апельсин', variants:[{l:'малый',p:'2 490 ₸'},{l:'большой',p:'4 290 ₸'}]},
+      ]},
+      { id:'water', label:'Вода', items:[
+        {n:'Aqua glass still / sparkling', d:'500 мл', p:'1 890 ₸'},
+        {n:'Blue Mont Premium water', d:'still/sparkling · 700 мл', p:'2 990 ₸'},
+        {n:'Burabay mineral water', d:'500 мл', p:'1 890 ₸'},
+      ]},
+    ]
+  },
+  desserts: {
+    label: 'Десерты / Выпечка',
+    categories: [
+      { id:'desserts', label:'Десерты', items:[
+        {n:'Профитроли с ванильным кремом', d:'И шоколадным соусом.', p:'2 290 ₸'},
+        {n:'Крем-карамель', d:'', p:'2 690 ₸'},
+        {n:'Трюфель классический', d:'', p:'790 ₸'},
+        {n:'Трюфель с фисташками', d:'', p:'990 ₸'},
+        {n:'Картошка с творожным сыром', d:'', p:'990 ₸'},
+        {n:'Картошка со сгущенкой', d:'', p:'990 ₸'},
+        {n:'Эклер с фисташкой', d:'', variants:[{l:'маковый',p:'1 890 ₸'},{l:'фисташковый',p:'1 590 ₸'}]},
+        {n:'Баскский чизкейк', d:'', p:'2 390 ₸'},
+        {n:'Шоколадный торт с солью', d:'', p:'2 990 ₸'},
+        {n:'Тарталетка с малиной', d:'', p:'2 790 ₸'},
+        {n:'Тарталетка с манго', d:'', p:'2 490 ₸'},
+        {n:'Тарт с голубикой', d:'', p:'3 990 ₸'},
+        {n:'Тарт с клубникой', d:'', p:'3 990 ₸'},
+        {n:'Тарт с малиной', d:'', p:'3 990 ₸'},
+        {n:'Тарт с карамелью и пеканом', d:'', p:'3 290 ₸'},
+        {n:'Шоколадная тарталетка с голубикой', d:'', p:'2 790 ₸'},
+        {n:'Клубничный мусс с фисташками', d:'', p:'3 790 ₸'},
+      ]},
+      { id:'bakery', label:'Выпечка', items:[
+        {n:'Канеле классический', d:'', p:'990 ₸'},
+        {n:'Канеле с кофейным кремом', d:'', p:'990 ₸'},
+        {n:'Канеле с фисташками', d:'', p:'1 290 ₸'},
+        {n:'Бабка с маком', d:'', p:'1 290 ₸'},
+        {n:'Круассан классический', d:'', p:'1 490 ₸'},
+        {n:'Круассан с шоколадом', d:'', p:'1 890 ₸'},
+        {n:'Круассан с карамелью', d:'', p:'2 390 ₸'},
+        {n:'Круассан с черной смородиной', d:'', p:'2 490 ₸'},
+        {n:'Круассан с миндалем', d:'', p:'2 790 ₸'},
+        {n:'Круассан с кофе', d:'', p:'2 790 ₸'},
+        {n:'Пан-о-шоколя', d:'', p:'1 790 ₸'},
+        {n:'Бантик с облепихой', d:'', p:'1 790 ₸'},
+        {n:'Карамельная улитка с орехами и изюмом', d:'', p:'1 990 ₸'},
+        {n:'Краффин с абрикосом', d:'', p:'1 790 ₸'},
+        {n:'Финансье с лимоном', d:'', p:'990 ₸'},
+      ]},
+      { id:'bread', label:'Хлеб', items:[
+        {n:'Мини-тартин', d:'Подаём с ремесленным маслом.', p:'890 ₸'},
+        {n:'Тартин', d:'', p:'990 ₸'},
+        {n:'Багет', d:'', p:'890 ₸'},
+        {n:'Черный хлеб с инжиром', d:'', p:'1 490 ₸'},
+      ]},
+    ]
+  }
+};
+
+/* =========================================================
+   MENU RENDERING
+========================================================= */
+let currentMenu = 'main';
+let currentCat = null;
+
+function renderChips(){
+  const wrap = document.getElementById('cat-chips');
+  wrap.innerHTML = '';
+  menuData[currentMenu].categories.forEach((cat, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-chip flex-shrink-0 border border-line rounded-full px-4 py-1.5 text-xs md:text-sm uppercase tracking-[0.1em] text-ink/70 transition-colors duration-300';
+    btn.textContent = cat.label;
+    btn.dataset.cat = cat.id;
+    if (i === 0) { currentCat = cat.id; btn.classList.add('active'); }
+    btn.addEventListener('click', () => {
+      currentCat = cat.id;
+      document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      renderItems();
+    });
+    wrap.appendChild(btn);
+  });
+}
+
+function priceRow(v){
+  if (v.variants) {
+    return v.variants.map(x => `
+      <div class="flex items-baseline">
+        <span class="text-sm text-ink/60">${x.l}</span>
+        <span class="leader"></span>
+        <span class="font-mono text-sm">${x.p}</span>
+      </div>`).join('');
+  }
+  return `
+    <div class="flex items-baseline">
+      <span class="leader"></span>
+      <span class="font-mono text-sm">${v.p}</span>
+    </div>`;
+}
+
+function renderItems(){
+  const wrap = document.getElementById('menu-items');
+  wrap.innerHTML = '';
+  const cat = menuData[currentMenu].categories.find(c => c.id === currentCat);
+  if (cat.note) {
+    const note = document.createElement('p');
+    note.className = 'md:col-span-2 -mt-4 mb-2 text-xs uppercase tracking-[0.15em] text-burgundy';
+    note.textContent = cat.note;
+    wrap.appendChild(note);
+  }
+  cat.items.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'item-row border-b border-line/70 pb-6';
+    row.innerHTML = `
+      <div class="flex items-baseline gap-2">
+        <h3 class="font-display text-lg md:text-xl">${item.n}</h3>
+        ${item.tag ? `<span class="font-mono text-[10px] uppercase tracking-widest text-gold border border-gold rounded-full px-2 py-0.5">${item.tag}</span>` : ''}
+      </div>
+      ${item.d ? `<p class="text-sm text-ink/60 mt-2 mb-3 leading-relaxed max-w-md">${item.d}</p>` : '<div class="mt-3"></div>'}
+      ${priceRow(item)}
+    `;
+    wrap.appendChild(row);
+  });
+
+  gsap.to('.item-row', { opacity:1, y:0, duration:0.5, stagger:0.04, ease:'power2.out' });
+}
+
+document.querySelectorAll('.menu-tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentMenu = btn.dataset.menu;
+    document.querySelectorAll('.menu-tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderChips();
+    renderItems();
+  });
+});
+
+renderChips();
+renderItems();
+
+/* =========================================================
+   MOBILE NAV
+========================================================= */
+document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+  document.getElementById('mobile-menu').classList.toggle('hidden');
+});
+document.querySelectorAll('#mobile-menu a').forEach(a => a.addEventListener('click', () => {
+  document.getElementById('mobile-menu').classList.add('hidden');
+}));
+
+/* =========================================================
+   LENIS SMOOTH SCROLL
+========================================================= */
+const lenis = new Lenis({
+  duration: 1.1,
+  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+  smoothWheel: true,
+});
+function raf(time){
+  lenis.raf(time);
+  requestAnimationFrame(raf);
+}
+requestAnimationFrame(raf);
+
+gsap.registerPlugin(ScrollTrigger);
+lenis.on('scroll', ScrollTrigger.update);
+gsap.ticker.add((time)=>{ lenis.raf(time*1000); });
+gsap.ticker.lagSmoothing(0);
+
+/* anchor links respect lenis */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click', (e)=>{
+    const id = a.getAttribute('href');
+    if (id.length>1){
+      e.preventDefault();
+      const target = document.querySelector(id);
+      if (target) lenis.scrollTo(target, { offset: -70 });
+    }
+  });
+});
+
+/* =========================================================
+   NAV COLOR ON SCROLL
+========================================================= */
+ScrollTrigger.create({
+  trigger: '#top',
+  start: 'bottom top',
+  onEnter: () => setNavDark(),
+  onLeaveBack: () => setNavLight(),
+});
+function setNavDark(){
+  const nav = document.getElementById('site-nav');
+  nav.classList.add('bg-cream/90','backdrop-blur','text-ink','shadow-sm');
+  document.querySelector('.nav-logo-img').classList.remove('bird-light');
+  document.querySelector('.nav-logo-img').classList.add('bird');
+}
+function setNavLight(){
+  const nav = document.getElementById('site-nav');
+  nav.classList.remove('bg-cream/90','backdrop-blur','text-ink','shadow-sm');
+  document.querySelector('.nav-logo-img').classList.add('bird-light');
+  document.querySelector('.nav-logo-img').classList.remove('bird');
+}
+document.getElementById('site-nav').classList.add('text-cream');
+
+/* =========================================================
+   HERO ENTRANCE — SplitType + GSAP
+========================================================= */
+window.addEventListener('load', () => {
+  const title = new SplitType('.hero-title', { types: 'chars' });
+  gsap.set(title.chars, { yPercent: 120, opacity: 0 });
+
+  const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+  tl.to('.hero-eyebrow', { opacity: 1, duration: 0.8, delay: 0.3 })
+    .to(title.chars, { yPercent: 0, opacity: 1, duration: 1.1, stagger: 0.035 }, '-=0.4')
+    .to('.hero-sub', { opacity: 1, duration: 0.9 }, '-=0.6')
+    .to('.hero-tagline', { opacity: 1, y: 0, duration: 0.9 }, '-=0.5')
+    .to('[class*="fade-up"]:last-of-type', { opacity: 1, duration: 0.8 }, '-=0.4');
+
+  gsap.to('.scroll-line', { scaleY: 0.4, repeat: -1, yoyo: true, duration: 1.4, ease:'sine.inOut', transformOrigin:'top' });
+});
+
+/* =========================================================
+   PARALLAX — hero / about / gallery
+========================================================= */
+gsap.to('.hero-img', {
+  yPercent: -14,
+  ease: 'none',
+  scrollTrigger: { trigger: '#top', start: 'top top', end: 'bottom top', scrub: true }
+});
+
+gsap.to('.about-img', {
+  yPercent: -12,
+  ease: 'none',
+  scrollTrigger: { trigger: '.about-img', start: 'top bottom', end: 'bottom top', scrub: true }
+});
+
+gsap.utils.toArray('.gallery-img').forEach((img, i) => {
+  gsap.to(img, {
+    yPercent: i % 2 === 0 ? -10 : 10,
+    ease: 'none',
+    scrollTrigger: { trigger: img, start: 'top bottom', end: 'bottom top', scrub: true }
+  });
+});
+
+/* =========================================================
+   SCROLL REVEALS
+========================================================= */
+gsap.utils.toArray('.fade-up').forEach(el => {
+  gsap.to(el, {
+    opacity: 1, y: 0, duration: 0.9, ease: 'power2.out',
+    scrollTrigger: { trigger: el, start: 'top 88%' }
+  });
+});
+
+gsap.utils.toArray('.gallery-item').forEach(el => {
+  gsap.to(el, {
+    y: 0, duration: 1, ease: 'power3.out',
+    scrollTrigger: { trigger: el, start: 'top 90%' }
+  });
+});
+</script>
+
+</body>
+</html>
