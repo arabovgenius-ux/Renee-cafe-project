@@ -3,683 +3,362 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RENEÉ CAFÉ — Almaty</title>
-<meta name="description" content="RENEÉ CAFÉ — французская кухня в Алматы. Завтраки, обеды, авторские напитки, десерты и выпечка.">
+<title>Renée Café — Almaty</title>
+<meta name="description" content="Renée Café — французское бистро на алматинский лад. Завтраки до вечера, барная карта и десерты.">
 
-<!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,500;1,9..144,600&family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Manrope:wght@400;500;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
 
-<!-- Tailwind -->
 <script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          ink: '#17130F',
-          ink2: '#241E17',
-          parchment: '#F2E9DA',
-          paper: '#FBF6EC',
-          oxblood: '#7A1F2B',
-          oxblood2: '#5C1420',
-          forest: '#3F5138',
-          brass: '#B08D4F',
-          rose: '#C98A82',
-        },
-        fontFamily: {
-          display: ['"Fraunces"', 'serif'],
-          accent: ['"Instrument Serif"', 'serif'],
-          sans: ['"Manrope"', 'sans-serif'],
-        },
-      }
-    }
-  }
-</script>
-
-<!-- GSAP -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<!-- Lenis -->
 <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
-<!-- Barba.js (подключена по требованию; сайт одностраничный, поэтому переходы между страницами не инициализируются) -->
 <script src="https://unpkg.com/@barba/core"></script>
-<!-- SplitType -->
 <script src="https://unpkg.com/split-type"></script>
 
 <style>
   :root{
-    --ink:#17130F; --parchment:#F2E9DA; --paper:#FBF6EC;
-    --oxblood:#7A1F2B; --brass:#B08D4F; --forest:#3F5138; --rose:#C98A82;
+    --ivory:#F7F1E8;
+    --ivory-deep:#F0E7D8;
+    --espresso:#251A14;
+    --wine:#6E2A2E;
+    --brass:#B08A4E;
+    --sage:#5C6B54;
   }
+
   *{box-sizing:border-box;}
-  html,body{background:var(--parchment); color:var(--ink); overflow-x:hidden;}
-  body{font-family:'Manrope',sans-serif;}
-  h1,h2,h3,h4,.font-display{font-family:'Fraunces',serif;}
-  .font-accent{font-family:'Instrument Serif',serif; font-style:italic;}
+  html{background:var(--ivory);}
+  body{
+    background:var(--ivory);
+    color:var(--espresso);
+    font-family:'Manrope',sans-serif;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--brass);color:var(--ivory);}
 
-  ::selection{background:var(--oxblood); color:var(--paper);}
+  .font-display{font-family:'Fraunces',serif; font-optical-sizing:auto;}
+  .font-accent{font-family:'Caveat',cursive;}
 
-  /* logo tint for dark backgrounds */
-  .logo-light{ filter: brightness(0) invert(1); }
-  .logo-brass{ filter: brightness(0) saturate(100%) invert(66%) sepia(20%) saturate(700%) hue-rotate(0deg) brightness(95%); }
+  /* thin brass hairline */
+  .hairline{height:1px;background:linear-gradient(90deg,transparent,var(--brass),transparent);}
+  .hairline-solid{height:1px;background:var(--brass);opacity:.45;}
 
-  /* hairline rule */
-  .rule{ height:1px; background:linear-gradient(90deg, transparent, rgba(23,19,15,.25), transparent); }
-  .rule-dark{ height:1px; background:linear-gradient(90deg, transparent, rgba(242,233,218,.25), transparent); }
-
-  /* menu dotted leaders */
-  .dots{ flex:1 1 auto; border-bottom:1.5px dotted rgba(23,19,15,.38); margin:0 10px 6px; min-width:16px; }
-  .dots-dark{ border-bottom-color:rgba(242,233,218,.3); }
-
-  .menu-item{ padding: 22px 0; border-bottom:1px solid rgba(23,19,15,.1); }
-  .menu-item:last-child{ border-bottom:none; }
-  .item-name{ font-family:'Fraunces',serif; font-weight:600; font-size:1.05rem; letter-spacing:.01em; }
-  .item-desc{ font-family:'Manrope',sans-serif; font-size:.82rem; line-height:1.5; color:rgba(23,19,15,.62); margin-top:6px; max-width:46ch; }
-  .item-price{ font-family:'Fraunces',serif; font-weight:500; white-space:nowrap; color:var(--oxblood); }
-  .variant-row{ display:flex; align-items:baseline; margin-top:8px; font-size:.85rem; color:rgba(23,19,15,.75); }
-  .variant-price{ font-family:'Fraunces',serif; color:var(--oxblood); white-space:nowrap; }
-  .tag-new{ display:inline-block; margin-left:10px; padding:2px 9px; font-size:.6rem; letter-spacing:.12em; text-transform:uppercase; font-family:'Manrope',sans-serif; font-weight:700; color:var(--paper); background:var(--forest); border-radius:99px; vertical-align:middle; transform:translateY(-2px); }
-
-  /* group + category tabs */
-  .group-btn{ font-family:'Fraunces',serif; transition:all .4s cubic-bezier(.4,0,.2,1); }
-  .group-btn[data-active="true"]{ color:var(--paper); }
-  .cat-pill{ transition:all .3s ease; border:1px solid rgba(23,19,15,.18); }
-  .cat-pill[data-active="true"]{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
-
-  .panel{ display:none; }
-  .panel[data-visible="true"]{ display:block; }
-
-  /* flight line signature element */
-  #flightRail{ position:fixed; left:28px; top:8vh; width:1px; height:82vh; background-image:linear-gradient(rgba(176,141,79,.55) 60%, transparent 0%); background-size:1px 10px; background-repeat:repeat-y; z-index:30; pointer-events:none; }
-  #flightBird{ position:fixed; left:20px; top:8vh; width:18px; height:18px; z-index:31; pointer-events:none; opacity:.9; }
-
-  @media (max-width: 1024px){
-    #flightRail, #flightBird{ display:none; }
+  /* signature arch shape — echoes the tiled bakery arch photographed on-site */
+  .arch{
+    border-radius: 50% 50% 0 0 / 30% 30% 0 0;
+    overflow:hidden;
+  }
+  .arch-frame{
+    position:relative;
+    border:1px solid rgba(176,138,78,.5);
+    padding:10px;
+    border-radius: 46% 46% 4px 4px / 22% 22% 4px 4px;
   }
 
-  .split-line{ overflow:hidden; }
+  .split-line{overflow:hidden;}
 
-  .grain{ position:fixed; inset:0; pointer-events:none; z-index:50; opacity:.035; mix-blend-mode:overlay;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
-
-  .nav-link{ position:relative; }
-  .nav-link::after{ content:''; position:absolute; left:0; bottom:-4px; width:0; height:1px; background:var(--brass); transition:width .35s ease; }
-  .nav-link:hover::after{ width:100%; }
-
-  .img-mask{ overflow:hidden; }
-  .img-mask img{ transform:scale(1.15); will-change:transform; }
-
-  .btn-primary{ background:var(--oxblood); color:var(--paper); transition:all .35s ease; }
-  .btn-primary:hover{ background:var(--ink); }
-
-     .mobile-menu { 
-    transform: translateY(-50px); 
-    opacity: 0;
-    visibility: hidden;
-    transition: transform .5s cubic-bezier(.6,0,.2,1), opacity .5s, visibility .5s; 
-  }
-  .mobile-menu.open { 
-    transform: translateY(0); 
-    opacity: 1;
-    visibility: visible;
+  .grain{
+    position:fixed; inset:0; pointer-events:none; z-index:40; opacity:.035; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
+  .nav-pill{
+    font-family:'Manrope',sans-serif;
+    font-size:13px;
+    letter-spacing:.04em;
+    white-space:nowrap;
+    padding:8px 16px;
+    border-radius:999px;
+    border:1px solid rgba(37,26,20,.18);
+    color:var(--espresso);
+    transition:all .3s ease;
+  }
+  .nav-pill.active, .nav-pill:hover{
+    background:var(--espresso);
+    color:var(--ivory);
+    border-color:var(--espresso);
+  }
 
+  .book-tab{
+    font-family:'Fraunces',serif;
+    font-size:15px;
+    padding-bottom:8px;
+    border-bottom:2px solid transparent;
+    color:rgba(37,26,20,.45);
+    transition:all .3s ease;
+  }
+  .book-tab.active{
+    color:var(--espresso);
+    border-color:var(--wine);
+  }
+
+  .dish{
+    border-bottom:1px solid rgba(37,26,20,.09);
+  }
+  .dish:last-child{border-bottom:none;}
+
+  .price-tag{
+    font-family:'Caveat',cursive;
+    font-weight:600;
+    color:var(--wine);
+    white-space:nowrap;
+  }
+
+  .tag-new{
+    font-family:'Manrope',sans-serif;
+    font-size:10px;
+    letter-spacing:.08em;
+    color:var(--sage);
+    border:1px solid var(--sage);
+    padding:1px 7px;
+    border-radius:999px;
+  }
+
+  .parallax-photo{
+    will-change:transform;
+  }
+
+  .swallow-line path{
+    fill:none;
+    stroke:var(--brass);
+    stroke-width:1.4;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+  }
+
+  a.underline-grow{
+    position:relative;
+    text-decoration:none;
+  }
+  a.underline-grow::after{
+    content:'';
+    position:absolute;
+    left:0; bottom:-2px;
+    width:100%; height:1px;
+    background:currentColor;
+    transform:scaleX(0);
+    transform-origin:right;
+    transition:transform .4s ease;
+  }
+  a.underline-grow:hover::after{
+    transform:scaleX(1);
+    transform-origin:left;
+  }
+
+  ::-webkit-scrollbar{width:10px;}
+  ::-webkit-scrollbar-track{background:var(--ivory);}
+  ::-webkit-scrollbar-thumb{background:var(--brass);border-radius:6px;}
 
   @media (prefers-reduced-motion: reduce){
-    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+    *{animation:none !important; transition:none !important;}
   }
 </style>
 </head>
-<body class="bg-parchment text-ink antialiased">
 
+<body data-barba="wrapper">
 <div class="grain"></div>
-<div id="flightRail"></div>
-<img id="flightBird" src="https://raw.githubusercontent.com/arabovgenius-ux/Renee-cafe-project/main/IMG_4612%20%28%D1%84%D0%BE%D0%BD%20%D1%83%D0%B4%D0%B0%D0%BB%D0%B5%D0%BD%29.png" alt="">
 
-<!-- ================= NAV ================= -->
-<header class="fixed top-0 left-0 w-full z-50 mix-blend-normal">
-  <div class="backdrop-blur-md bg-ink/70">
-    <div class="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between h-20">
-      <a href="#top" class="flex items-center gap-3 shrink-0">
-        <img src="https://raw.githubusercontent.com/arabovgenius-ux/Renee-cafe-project/main/IMG_4612%20%28%D1%84%D0%BE%D0%BD%20%D1%83%D0%B4%D0%B0%D0%BB%D0%B5%D0%BD%29.png" class="h-8 w-auto logo-light" alt="Renée Café">
-        <span class="font-display text-parchment tracking-[0.18em] text-sm uppercase">Renée&nbsp;Café</span>
-      </a>
-      <nav class="hidden lg:flex items-center gap-10 text-parchment/85 text-sm tracking-wide">
-        <a href="#story" class="nav-link">Атмосфера</a>
-        <a href="#menu" class="nav-link">Меню</a>
-        <a href="#contact" class="nav-link">Контакты</a>
-      </nav>
-      <div class="hidden lg:flex items-center gap-4">
-        <a href="https://wa.me/77771112024" target="_blank" rel="noopener" class="btn-primary text-xs tracking-[0.14em] uppercase font-semibold px-5 py-2.5 rounded-full">Написать в WhatsApp</a>
-      </div>
-      <button id="burger" class="lg:hidden text-parchment w-8 h-8 flex flex-col justify-center gap-1.5">
-        <span class="block h-px w-full bg-parchment"></span>
-        <span class="block h-px w-full bg-parchment"></span>
-      </button>
-    </div>
-  </div>
-  <div id="mobileMenu" class="mobile-menu lg:hidden absolute top-20 left-0 w-full bg-ink text-parchment px-6 py-8 flex flex-col gap-6 text-lg font-display">
-    <a href="#story">Атмосфера</a>
-    <a href="#menu">Меню</a>
-    <a href="#contact">Контакты</a>
-    <a href="https://wa.me/77771112024" class="btn-primary text-center rounded-full py-3 text-sm uppercase tracking-widest not-italic font-sans">WhatsApp</a>
+<!-- ============ NAV ============ -->
+<header id="topnav" class="fixed top-0 left-0 w-full z-30 transition-all duration-500" style="background:transparent;">
+  <div class="max-w-7xl mx-auto px-6 md:px-10 py-5 flex items-center justify-between">
+    <a href="#hero" class="flex items-center gap-3">
+      <img src="" data-asset="logo" alt="Renée Café" class="w-8 h-8 object-contain" style="filter:brightness(0) saturate(100%);">
+      <span class="font-display text-lg tracking-wide" style="color:var(--espresso);">Renée</span>
+    </a>
+    <nav class="hidden md:flex items-center gap-8 text-sm" style="font-family:'Manrope',sans-serif;">
+      <a href="#about" class="underline-grow">О кафе</a>
+      <a href="#menu" class="underline-grow">Меню</a>
+      <a href="#atmosphere" class="underline-grow">Атмосфера</a>
+      <a href="#contacts" class="underline-grow">Контакты</a>
+    </nav>
   </div>
 </header>
 
-<!-- ================= HERO ================= -->
-<section id="top" class="relative h-[100svh] w-full overflow-hidden flex items-end">
-  <div class="absolute inset-0 img-mask">
-    <img id="heroImg" src="https://raw.githubusercontent.com/arabovgenius-ux/Renee-cafe-project/main/IMG_4617.jpeg" class="w-full h-full object-cover object-center" alt="Зал Renée Café">
-  </div>
-  <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/50 to-ink/10"></div>
-  <div class="absolute inset-0 bg-ink/20"></div>
+<div data-barba="container" data-barba-namespace="home">
 
-  <div class="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-10 pb-16 lg:pb-24">
-    <p class="font-accent text-rose text-lg lg:text-xl mb-4 opacity-0" id="heroKicker">française de cœur, almaty d'âme</p>
-    <h1 class="font-display text-parchment leading-[0.92] font-medium">
-      <span class="split-line block overflow-hidden"><span class="block text-[16vw] lg:text-[7.2vw]" id="heroLine1">RENEÉ</span></span>
-      <span class="split-line block overflow-hidden"><span class="block text-[16vw] lg:text-[7.2vw] text-brass" id="heroLine2">CAFÉ</span></span>
-    </h1>
-    <div class="mt-10 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 opacity-0" id="heroFoot">
-      <p class="text-parchment/70 max-w-md text-sm lg:text-base leading-relaxed">
-        Утро с круассаном, обед за бокалом лимонада, вечер с трюфельным фри. Французская кухня в сердце Алматы — без спешки и лишнего шума.
-      </p>
-      <div class="flex items-center gap-3 text-parchment/60 text-xs uppercase tracking-[0.2em]">
-        <span>Завтраки</span><span class="w-1 h-1 rounded-full bg-brass"></span>
-        <span>Кухня</span><span class="w-1 h-1 rounded-full bg-brass"></span>
-        <span>Бар</span><span class="w-1 h-1 rounded-full bg-brass"></span>
-        <span>Десерты</span>
-      </div>
-    </div>
+<!-- ============ HERO ============ -->
+<section id="hero" class="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
+
+  <svg class="swallow-line absolute opacity-70" style="top:14%; right:8%; width:90px;" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
+    <path d="M5 45 C 25 20, 35 55, 50 30 C 60 15, 65 40, 95 10"/>
+  </svg>
+
+  <div id="hero-logo" class="w-20 h-20 md:w-24 md:h-24 mb-8 opacity-0">
+    <img src="" data-asset="logo" alt="" class="w-full h-full object-contain">
   </div>
 
-  <a href="#story" class="absolute bottom-8 right-8 lg:right-10 z-10 text-parchment/70 text-xs tracking-[0.2em] uppercase [writing-mode:vertical-rl] flex items-center gap-3">
-    <span class="w-px h-14 bg-parchment/40"></span>Прокрутите
+  <h1 id="hero-title" class="font-display text-center leading-[0.95]" style="font-size:clamp(3rem,11vw,9rem); color:var(--espresso);">
+    RENÉE
+  </h1>
+  <p id="hero-sub" class="font-display italic text-center mt-1" style="font-size:clamp(1.2rem,3vw,2rem); color:var(--wine); letter-spacing:.02em;">
+    café
+  </p>
+
+  <div class="hairline w-40 my-8"></div>
+
+  <p id="hero-tagline" class="font-accent text-center opacity-0" style="font-size:clamp(1.6rem,3vw,2.2rem); color:var(--espresso);">
+    « L'hirondelle revient toujours »
+  </p>
+  <p id="hero-translation" class="text-center mt-2 opacity-0" style="font-size:13px; letter-spacing:.08em; color:rgba(37,26,20,.6);">
+    ЛАСТОЧКА ВСЕГДА ВОЗВРАЩАЕТСЯ
+  </p>
+
+  <a href="#about" class="mt-16 flex flex-col items-center gap-2 opacity-0" id="hero-scroll">
+    <span style="font-size:11px; letter-spacing:.15em; color:rgba(37,26,20,.5);">ЛИСТАТЬ</span>
+    <span class="block w-px h-10" style="background:var(--brass);"></span>
   </a>
 </section>
 
-<!-- ================= STORY / ATMOSPHERE ================= -->
-<section id="story" class="relative bg-parchment py-28 lg:py-36">
-  <div class="max-w-7xl mx-auto px-6 lg:px-10">
-    <div class="grid lg:grid-cols-12 gap-10 items-end mb-16">
-      <div class="lg:col-span-7 reveal-up">
-        <p class="uppercase tracking-[0.25em] text-xs text-oxblood font-semibold mb-5">Атмосфера</p>
-        <h2 class="font-display text-4xl lg:text-6xl font-medium leading-[1.05]">
-          Ботанический потолок,<br> мраморная стойка<br> и <span class="font-accent text-oxblood font-normal">свет,</span> который не спешит.
-        </h2>
-      </div>
-      <div class="lg:col-span-5 reveal-up">
-        <p class="text-ink/65 leading-relaxed text-base lg:text-lg">
-          Интерьер Renée собран из контрастов: расписной потолок с птицами и тропической зеленью, бордовая керамическая колонна, клетчатые банкетки и латунная фурнитура. Ничего случайного — каждая деталь работает на ощущение тёплого французского дома.
-        </p>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-2 lg:grid-cols-12 gap-4 lg:gap-6">
-      <div class="col-span-2 lg:col-span-7 img-mask rounded-sm reveal-up h-[320px] lg:h-[520px]">
-        <img src="https://raw.githubusercontent.com/arabovgenius-ux/Renee-cafe-project/main/IMG_4615.jpeg" class="w-full h-full object-cover" alt="Зал с росписью потолка">
-      </div>
-      <div class="col-span-1 lg:col-span-5 img-mask rounded-sm reveal-up h-[240px] lg:h-[520px]">
-        <img src="https://raw.githubusercontent.com/arabovgenius-ux/Renee-cafe-project/main/IMG_4616.jpeg" class="w-full h-full object-cover" alt="Уютная ниша с банкетками">
-      </div>
-      <div class="col-span-1 lg:col-span-5 img-mask rounded-sm reveal-up h-[240px] lg:h-[380px]">
-        <img src="https://raw.githubusercontent.com/arabovgenius-ux/Renee-cafe-project/main/IMG_4618.jpeg" class="w-full h-full object-cover" alt="Барная тележка">
-      </div>
-      <div class="col-span-1 lg:col-span-7 img-mask rounded-sm reveal-up h-[240px] lg:h-[380px]">
-        <img src="https://raw.githubusercontent.com/arabovgenius-ux/Renee-cafe-project/main/IMG_4613.jpeg" class="w-full h-full object-cover" alt="Барная стойка и витрина с выпечкой">
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= MENU ================= -->
-<section id="menu" class="relative bg-ink text-parchment py-28 lg:py-36">
-  <div class="max-w-7xl mx-auto px-6 lg:px-10">
-
-    <div class="mb-16 reveal-up">
-      <p class="uppercase tracking-[0.25em] text-xs text-brass font-semibold mb-5">Меню</p>
-      <h2 class="font-display text-4xl lg:text-6xl font-medium leading-[1.05] max-w-3xl">
-        Полное меню, <span class="font-accent italic text-rose font-normal">от эспрессо до рибая.</span>
+<!-- ============ ABOUT ============ -->
+<section id="about" class="relative py-28 md:py-36 px-6">
+  <div class="max-w-6xl mx-auto grid md:grid-cols-12 gap-12 items-center">
+    <div class="md:col-span-7 reveal-up">
+      <span class="font-accent block mb-3" style="font-size:1.5rem;color:var(--brass);">о кафе</span>
+      <h2 class="font-display mb-8" style="font-size:clamp(1.8rem,3.4vw,2.8rem); line-height:1.2; color:var(--espresso);">
+        Утро, которое<br>не хочется торопить
       </h2>
+      <p class="mb-5" style="font-size:16px; line-height:1.85; color:rgba(37,26,20,.85); max-width:52ch;">
+        История Renée началась не с рецепта, а с одного вопроса: что, если утро в Алматы могло бы длиться так же неспешно, как в парижском бистро — с запахом свежего тартина, звоном фарфора и временем, которое никто не считает.
+      </p>
+      <p style="font-size:16px; line-height:1.85; color:rgba(37,26,20,.85); max-width:52ch;">
+        Мы не подбирали блюда под тренды. Драники соседствуют с шакшукой, конская колбаска — с бешамелем, а винегрет встречает жая и казы. Это не эклектика ради эклектики: каждое блюдо готовится с той же внимательностью, что и во французском бистро — долго, вручную, без спешки. Renée — про то, что хорошее утро не нужно объяснять. Его нужно просто прожить, за одним столом, сколько бы времени это ни заняло.
+      </p>
     </div>
-
-    <!-- group tabs -->
-    <div class="flex flex-wrap gap-3 mb-8 reveal-up">
-      <button class="group-btn px-6 py-3 rounded-full text-sm tracking-wide border border-parchment/25" data-group-btn="food" data-active="true">Основное меню</button>
-      <button class="group-btn px-6 py-3 rounded-full text-sm tracking-wide border border-parchment/25" data-group-btn="bar" data-active="false">Барное меню</button>
-      <button class="group-btn px-6 py-3 rounded-full text-sm tracking-wide border border-parchment/25" data-group-btn="sweet" data-active="false">Десерты / Выпечка</button>
-    </div>
-
-    <!-- sub category pills -->
-    <div class="mb-14 reveal-up">
-      <div class="cat-bar flex flex-wrap gap-2" data-group="food">
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="breakfast" data-active="true">Завтраки</button>
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="sweetbreakfast" data-active="false">Сладкие завтраки</button>
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="starters" data-active="false">Стартеры</button>
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="snacks" data-active="false">Закуски</button>
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="salads" data-active="false">Салаты</button>
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="soups" data-active="false">Супы</button>
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="pasta" data-active="false">Паста</button>
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="mains" data-active="false">Основные блюда</button>
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="bruschette" data-active="false">Брускетты</button>
-      </div>
-      <div class="cat-bar flex-wrap gap-2 hidden" data-group="bar">
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="coffee" data-active="true">Кофе</button>
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="signature" data-active="false">Авторские напитки</button>
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="lemonade" data-active="false">Лимонады</button>
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="fresh" data-active="false">Фреши</button>
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="smoothie" data-active="false">Смузи</button>
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="tea" data-active="false">Чаи</button>
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="signaturetea" data-active="false">Авторские чаи</button>
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="soft" data-active="false">Софт дринкс</button>
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="water" data-active="false">Вода</button>
-      </div>
-      <div class="cat-bar flex-wrap gap-2 hidden" data-group="sweet">
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="desserts" data-active="true">Десерты</button>
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="pastry" data-active="false">Выпечка</button>
-        <button class="cat-pill px-4 py-2 rounded-full text-xs uppercase tracking-wider text-parchment/80" data-cat="bread" data-active="false">Хлеб</button>
-      </div>
-    </div>
-
-    <!-- panels -->
-    <div id="menuRoot" class="bg-parchment text-ink rounded-sm px-6 lg:px-14 py-10 lg:py-14">
-      <!-- FOOD -->
-      <div class="menu-panel" data-group="food">
-        <div class="panel" data-cat="breakfast" data-visible="true">
-          <p class="text-xs uppercase tracking-[0.25em] text-oxblood font-semibold mb-8">Завтраки · доступны до 16:00</p>
-          <div id="p-breakfast" class="grid lg:grid-cols-2 gap-x-14"></div>
+    <div class="md:col-span-5">
+      <div class="arch-frame">
+        <div class="arch aspect-[3/4]">
+          <img src="" data-asset="photo3" alt="Интерьер Renée Café" class="w-full h-full object-cover parallax-photo" data-speed="0.85">
         </div>
-        <div class="panel" data-cat="sweetbreakfast"><div id="p-sweetbreakfast" class="grid lg:grid-cols-2 gap-x-14"></div></div>
-        <div class="panel" data-cat="starters"><div id="p-starters" class="grid lg:grid-cols-2 gap-x-14"></div></div>
-        <div class="panel" data-cat="snacks"><div id="p-snacks" class="grid lg:grid-cols-2 gap-x-14"></div></div>
-        <div class="panel" data-cat="salads"><div id="p-salads" class="grid lg:grid-cols-2 gap-x-14"></div></div>
-        <div class="panel" data-cat="soups"><div id="p-soups" class="grid lg:grid-cols-2 gap-x-14"></div></div>
-        <div class="panel" data-cat="pasta"><div id="p-pasta" class="grid lg:grid-cols-2 gap-x-14"></div></div>
-        <div class="panel" data-cat="mains"><div id="p-mains" class="grid lg:grid-cols-2 gap-x-14"></div></div>
-        <div class="panel" data-cat="bruschette"><div id="p-bruschette" class="grid lg:grid-cols-2 gap-x-14"></div></div>
-      </div>
-      <!-- BAR -->
-      <div class="menu-panel hidden" data-group="bar">
-        <div class="panel" data-cat="coffee" data-visible="true"><div id="p-coffee" class="grid lg:grid-cols-2 gap-x-14"></div></div>
-        <div class="panel" data-cat="signature"><div id="p-signature" class="grid lg:grid-cols-2 gap-x-14"></div></div>
-        <div class="panel" data-cat="lemonade"><div id="p-lemonade" class="grid lg:grid-cols-2 gap-x-14"></div></div>
-        <div class="panel" data-cat="fresh"><div id="p-fresh" class="grid lg:grid-cols-2 gap-x-14"></div></div>
-        <div class="panel" data-cat="smoothie"><div id="p-smoothie" class="grid lg:grid-cols-2 gap-x-14"></div></div>
-        <div class="panel" data-cat="tea"><div id="p-tea" class="grid lg:grid-cols-2 gap-x-14"></div></div>
-        <div class="panel" data-cat="signaturetea"><div id="p-signaturetea" class="grid lg:grid-cols-2 gap-x-14"></div></div>
-        <div class="panel" data-cat="soft"><div id="p-soft" class="grid lg:grid-cols-2 gap-x-14"></div></div>
-        <div class="panel" data-cat="water"><div id="p-water" class="grid lg:grid-cols-2 gap-x-14"></div></div>
-      </div>
-      <!-- SWEET -->
-      <div class="menu-panel hidden" data-group="sweet">
-        <div class="panel" data-cat="desserts" data-visible="true"><div id="p-desserts" class="grid lg:grid-cols-2 gap-x-14"></div></div>
-        <div class="panel" data-cat="pastry"><div id="p-pastry" class="grid lg:grid-cols-2 gap-x-14"></div></div>
-        <div class="panel" data-cat="bread"><div id="p-bread" class="grid lg:grid-cols-2 gap-x-14"></div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ================= CONTACT ================= -->
-<footer id="contact" class="relative bg-ink text-parchment pt-24 pb-10">
-  <div class="max-w-7xl mx-auto px-6 lg:px-10">
-    <div class="grid lg:grid-cols-12 gap-12 pb-16">
-      <div class="lg:col-span-5 reveal-up">
-        <img src="https://raw.githubusercontent.com/arabovgenius-ux/Renee-cafe-project/main/IMG_4612%20%28%D1%84%D0%BE%D0%BD%20%D1%83%D0%B4%D0%B0%D0%BB%D0%B5%D0%BD%29.png" class="h-10 w-auto logo-light mb-8" alt="Renée Café">
-        <h3 class="font-display text-3xl lg:text-4xl font-medium leading-tight mb-6">Ждём вас <span class="font-accent italic text-rose font-normal">каждый день.</span></h3>
-        <p class="text-parchment/60 max-w-sm leading-relaxed">Столик, круассан и разговор, который не хочется прерывать — в этом весь Renée.</p>
-      </div>
+<div class="max-w-6xl mx-auto px-6"><div class="hairline-solid"></div></div>
 
-      <div class="lg:col-span-3 lg:col-start-7 reveal-up">
-        <p class="text-xs uppercase tracking-[0.25em] text-brass font-semibold mb-5">Адрес</p>
-        <a href="https://maps.app.goo.gl/VwtKH5GL8NX7TVk4A?g_st=ic" target="_blank" rel="noopener" class="nav-link inline-block text-parchment/85 leading-relaxed hover:text-parchment">
-          Алматы<br>Открыть в Google Maps →
+<!-- ============ MENU ============ -->
+<section id="menu" class="relative py-28 md:py-32 px-6">
+  <div class="max-w-6xl mx-auto">
+
+    <div class="text-center mb-16 reveal-up">
+      <span class="font-accent block mb-3" style="font-size:1.5rem;color:var(--brass);">карта</span>
+      <h2 class="font-display" style="font-size:clamp(2rem,4vw,3.2rem); color:var(--espresso);">Меню</h2>
+    </div>
+
+    <!-- book tabs -->
+    <div id="book-tabs" class="flex justify-center gap-8 md:gap-14 mb-10 border-b" style="border-color:rgba(37,26,20,.12);">
+      <button class="book-tab active" data-book="main">Основное меню</button>
+      <button class="book-tab" data-book="bar">Барное меню</button>
+      <button class="book-tab" data-book="sweets">Десерты / Выпечка</button>
+    </div>
+
+    <!-- category pill nav -->
+    <div id="cat-nav-wrap" class="sticky top-[64px] z-20 py-3 mb-10" style="background:var(--ivory);">
+      <div id="cat-nav" class="flex gap-2 overflow-x-auto pb-1" style="scrollbar-width:none;"></div>
+    </div>
+
+    <div id="menu-books"></div>
+  </div>
+</section>
+
+<div class="max-w-6xl mx-auto px-6"><div class="hairline-solid"></div></div>
+
+<!-- ============ ATMOSPHERE ============ -->
+<section id="atmosphere" class="relative py-28 md:py-36 px-6 overflow-hidden">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-16 reveal-up">
+      <span class="font-accent block mb-3" style="font-size:1.5rem;color:var(--brass);">внутри</span>
+      <h2 class="font-display" style="font-size:clamp(2rem,4vw,3.2rem); color:var(--espresso);">Атмосфера</h2>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-6 gap-4 md:gap-6">
+      <div class="col-span-2 md:col-span-4 md:row-span-2 arch-frame">
+        <div class="arch h-full">
+          <img src="" data-asset="photo2" alt="Renée Café" class="w-full h-full object-cover parallax-photo" data-speed="0.9" style="aspect-ratio:4/3;">
+        </div>
+      </div>
+      <div class="col-span-1 md:col-span-2 arch-frame mt-0 md:mt-10">
+        <div class="arch">
+          <img src="" data-asset="photo1" alt="Renée Café" class="w-full h-full object-cover parallax-photo" data-speed="1.08" style="aspect-ratio:1/1;">
+        </div>
+      </div>
+      <div class="col-span-1 md:col-span-2 arch-frame">
+        <div class="arch">
+          <img src="" data-asset="photo4" alt="Renée Café" class="w-full h-full object-cover parallax-photo" data-speed="0.95" style="aspect-ratio:1/1;">
+        </div>
+      </div>
+      <div class="col-span-1 md:col-span-3 arch-frame mt-0 md:-mt-6">
+        <div class="arch">
+          <img src="" data-asset="photo5" alt="Renée Café" class="w-full h-full object-cover parallax-photo" data-speed="1.05" style="aspect-ratio:5/4;">
+        </div>
+      </div>
+      <div class="col-span-1 md:col-span-3 arch-frame">
+        <div class="arch">
+          <img src="" data-asset="photo6" alt="Renée Café" class="w-full h-full object-cover parallax-photo" data-speed="0.9" style="aspect-ratio:5/4;">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACTS / FOOTER ============ -->
+<footer id="contacts" class="relative pt-24 pb-10 px-6" style="background:var(--espresso); color:var(--ivory);">
+  <svg class="swallow-line absolute opacity-40" style="top:8%; left:6%; width:80px;" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
+    <path d="M5 45 C 25 20, 35 55, 50 30 C 60 15, 65 40, 95 10"/>
+  </svg>
+
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-16 reveal-up">
+      <span class="font-accent block mb-3" style="font-size:1.5rem;color:var(--brass);">с 2024</span>
+      <h2 class="font-display" style="font-size:clamp(1.8rem,3.6vw,2.8rem);">До встречи в Renée</h2>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-12 max-w-4xl mx-auto text-center">
+      <div>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" class="mx-auto mb-4" style="stroke:var(--brass);stroke-width:1.3;">
+          <path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11Z"/>
+          <circle cx="12" cy="10" r="2.4"/>
+        </svg>
+        <p class="text-xs tracking-widest opacity-60 mb-2">АДРЕС</p>
+        <a href="https://maps.app.goo.gl/VwtKH5GL8NX7TVk4A?g_st=ic" target="_blank" rel="noopener" class="underline-grow" style="font-family:'Fraunces',serif;">
+          Смотреть на карте
         </a>
       </div>
-
-      <div class="lg:col-span-3 reveal-up">
-        <p class="text-xs uppercase tracking-[0.25em] text-brass font-semibold mb-5">Связаться</p>
-        <a href="https://wa.me/77771112024" target="_blank" rel="noopener" class="nav-link block text-parchment/85 mb-3 hover:text-parchment">+7 777 111 2024 · WhatsApp</a>
-        <a href="https://www.instagram.com/renee_almaty?igsh=ZTZtc2syc2Y3YXIz" target="_blank" rel="noopener" class="nav-link inline-block text-parchment/85 hover:text-parchment">@renee_almaty</a>
+      <div>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" class="mx-auto mb-4" style="stroke:var(--brass);stroke-width:1.3;">
+          <path d="M4 20l1.6-4A8 8 0 1 1 9 19.4L4 20Z"/>
+        </svg>
+        <p class="text-xs tracking-widest opacity-60 mb-2">WHATSAPP</p>
+        <a href="https://wa.me/77771112024" target="_blank" rel="noopener" class="underline-grow" style="font-family:'Fraunces',serif;">
+          +7 777 111 2024
+        </a>
       </div>
-
-      <div class="lg:col-span-12 lg:col-span-1 reveal-up">
-        <p class="text-xs uppercase tracking-[0.25em] text-brass font-semibold mb-5">Часы</p>
-        <p class="text-parchment/85">Ежедневно<br>09:00 — 23:00</p>
+      <div>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" class="mx-auto mb-4" style="stroke:var(--brass);stroke-width:1.3;">
+          <rect x="3" y="3" width="18" height="18" rx="5"/>
+          <circle cx="12" cy="12" r="4"/>
+          <circle cx="17.2" cy="6.8" r="0.6" fill="var(--brass)"/>
+        </svg>
+        <p class="text-xs tracking-widest opacity-60 mb-2">INSTAGRAM</p>
+        <a href="https://instagram.com/renee_almaty" target="_blank" rel="noopener" class="underline-grow" style="font-family:'Fraunces',serif;">
+          @renee_almaty
+        </a>
       </div>
     </div>
 
-    <div class="rule-dark mb-8"></div>
-    <div class="flex flex-col lg:flex-row items-center justify-between gap-4 text-xs text-parchment/45 tracking-wide">
-      <p>© Renée Café, Almaty.</p>
-      <p>Кухня без спешки.</p>
+    <div class="mt-20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs opacity-50" style="border-top:1px solid rgba(247,241,232,.15);">
+      <span>© 2024 — {{YEAR}} Renée Café</span>
+      <span class="font-accent text-base" style="color:var(--brass);">à bientôt</span>
     </div>
   </div>
 </footer>
 
-<script>
-/* ============ MENU DATA ============ */
-const mi  = (n,p,d,t) => ({n,p,d,t});
-const miv = (n,v,d,t) => ({n,v,d,t});
+</div><!-- /barba container -->
 
-const DATA = {
-  breakfast: [
-    mi("Датский завтрак","3 890 ₸","Хрустящий тартин со взбитым и сливочным маслом, сыром Эмменталь, яйцом-пятиминуткой и мортаделлой, вишней с лаймом, солью Малдон и дуккой."),
-    mi("Шакшука в средиземноморском стиле","4 390 ₸","Лук, копчёные розовые оливки, запечённый перец и томаты, фета, яйцо пашот, мусс из пармезана и базилик."),
-    mi("Французский омлет с мортаделлой","4 190 ₸","Омлет из трёх яиц со сливками, моцарелла и томаты внутри, говяжья мортаделла, корнишоны, пармезан и дукка."),
-    miv("Фирменный завтрак Renée",[["Мортаделла","6 490 ₸"],["Лосось","7 190 ₸"]],"Круассан с трюфельным бешамелем и камамбером, лосось или мортаделла, томаты, огурцы, салат с винегретом, яйцо 6 минут, трюфельный айоли, тартин и скрембл со страчателлой."),
-    mi("Английский завтрак","5 290 ₸","Глазунья с конской колбаской, картофельный гратен, фасоль в томатном соусе, шампиньоны демигляс, зерновая горчица и зелень."),
-    mi("Скрэмбл со сладким угрем","4 990 ₸","Скрэмбл из трёх яиц со сливками, копчёный угорь в соусе унаги, страчателла, лук сибулет и микс кунжута."),
-    mi("Скрэмбл с риетом из лосося","4 690 ₸","Скрэмбл с пармезаном, риет из лосося со страчателлой и черемшой, бакинские томаты, микс зелени и домашний тартин."),
-    miv("Авокадо-тост",[["базовый","2 990 ₸"],["с атлантическим лососем","2 390 ₸"]],"Бородинский хлеб с инжиром, мусс из креметты, авокадо, слайсы редиса и щавель."),
-    mi("Картофельные драники с атлантическим лососем","5 590 ₸","Драники без лука, слабосолёный лосось, шпинат, яйцо пашот, сметанковый соус и микс зелени с эдамаме."),
-    mi("Бенедикт на бриоши с атлантическим лососем","5 490 ₸","Бриошь в яичной смеси, яйцо пашот, соус голландез, слабосолёный лосось и микс зелени с эдамаме."),
-    mi("Круассан со скрэмблом и мортаделлой","3 590 ₸","Скрэмбл, сливочная моцарелла, мортаделла, пармезан и дукка."),
-    mi("Завтрак номада","3 890 ₸","Казы из конины, глазунья, картофельные драники, томатная сальса и соус номад со сметаной и кинзой."),
-    mi("Омлет с креветками в соусе биск","4 790 ₸","Обжаренные креветки в чесночном масле с тимьяном и соусом биск.","New"),
-    mi("Бенедикт на тартине с говяжьей мортаделлой","3 990 ₸","Тартин на гриле, соус ромеско, яйцо пашот, соус голландез, мортаделла, пиклз крем-чиз и лук шнитт.","New"),
-    mi("Брускетта с креветками и страчателлой","4 890 ₸","Хрустящий тартин-гриль, гуакамоле, креветки конфи с чесноком и тимьяном, красножильный щавель."),
-  ],
-  sweetbreakfast: [
-    mi("Каша рисовая","1 990 ₸","С голубикой, хрустящей карамелью и фисташками."),
-    mi("Каша овсяная","1 990 ₸","С малиной, сублимированными ягодами и вареньем из чёрной смородины."),
-    mi("Нежные сырники","3 690 ₸","Из жирного творога, крем англез, сублимированная малина и фисташка."),
-    mi("Взбитый творог","3 390 ₸","Крем англез, тёртый балкаймак, сублимированная малина, фисташка и классический канеле."),
-    miv("Оладьи Renée",[["базовые","2 990 ₸"],["с красной икрой","3 490 ₸"],["с атлантическим лососем","2 390 ₸"],["с креметтой","790 ₸"]],"Крем англез, сублимированная малина, свежая сметана и варенье из вишни с лаймом."),
-    mi("Френч-тост","2 890 ₸","Воздушная бриошь с яйцом, молоком и корицей, ванильное мороженое, кокосовая карамель и орех пекан."),
-  ],
-  starters: [
-    mi("Ассорти оливок","3 390 ₸","Зелёные испанские и розовые итальянские оливки с апельсином и розмарином."),
-    mi("Перчики падрон","3 990 ₸","Обжаренные на гриле, соус ромеско и тёртый пармезан."),
-    mi("Фри с трюфелем и пармезаном","3 390 ₸","Хрустящий картофель фри, трюфельный айоли и трюфельная паста."),
-    mi("Ассорти сыров","7 190 ₸","Пекорино, Эмменталь, Пармезан 12 месяцев и молодой Камамбер, яблочный чатни и гриссини."),
-  ],
-  snacks: [
-    mi("Паштет из куриной печени с яблочным чатни","3 990 ₸","Печень с вишнёвым вареньем и лаймом, яблочный чатни и бриошь."),
-    mi("Хумус с печёным перцем и фисташками","3 690 ₸","Нут с тахини и мисо-пастой, печёные перцы, зелёная сальса."),
-    mi("Картофельный гратен","4 490 ₸","Печёный картофель в чесночно-сливочном соусе, грибной соус со сморчками."),
-    mi("Классический тартар","5 290 ₸","Говядина, шалот, каперсы, перепелиный желток, мусс пармезан и картофель фри."),
-    mi("Вителло тоннато","4 990 ₸","Ростбиф из телятины medium, соус тоннато на тунце, каперсах и анчоусах."),
-    mi("Запечённые перцы с риетом из тунца","4 190 ₸","Перцы рамиро, соус ромеско, риет из тунца, каперсы и крошка тартина."),
-    mi("Буррата с ташкентскими томатами","5 890 ₸","Дрессинг на оливковом масле, мирине и бальзамике, мята и базилик.","New"),
-    mi("Тартар из лосося и гуакамоле","6 490 ₸","Шалот, каперсы, гуакамоле из авокадо, соус понзу и сублимированная малина.","New"),
-  ],
-  salads: [
-    mi("Греческий салат","4 990 ₸","Томаты, огурец, перец, оливки, фета, дрессинг из оливкового масла и мёда."),
-    mi("Зелёный салат","5 190 ₸","Микс салата, фенхель, эдамаме, авокадо, брокколи, соус мисо и креметта."),
-    mi("Тёплый салат с цыплёнком-гриль","3 590 ₸","Ромейн с зелёным виноградом, бедро курицы, микс огурцов и винегрет."),
-    mi("Оливье с жая","3 990 ₸","Печёный картофель и морковь, жая, зелёный горошек, огурцы и корнишоны."),
-  ],
-  soups: [
-    mi("Парижский луковый суп","3 990 ₸","Карамелизированный лук, тимьян, белое вино и портвейн, багет под бешамелем."),
-    mi("Грибной крем-суп","3 890 ₸","Вешенки и шампиньоны, демигляс, сметана и трюфельное масло."),
-    mi("Похлёбка из морепродуктов","5 890 ₸","Мидии, креветки и филе лосося в биске."),
-    mi("Куриный бульон с домашней лапшой","2 790 ₸","Бедро цыплёнка, домашняя лапша и свежая зелень."),
-  ],
-  pasta: [
-    mi("Фетучини с трюфелем и орехом пекан","4 490 ₸","Соус на бешамеле, камамбере и трюфельной пасте, орех пекан."),
-    mi("Болоньезе","4 890 ₸","Фетучини, соус болоньезе на говяжьем фарше и авторский томатный соус."),
-    mi("Казаречче с креветками и цукини","5 890 ₸","Сливочный соус с белым вином, песто из базилика и кедровых орехов."),
-    mi("Качо-э-пепе","4 190 ₸","Паккери Ригати, соус на курином бульоне и Грано Падано."),
-    mi("Ризотто с грибами","4 890 ₸","Рис арборио, соус качо с коньяком, сморчки и мусс из пармезана."),
-  ],
-  mains: [
-    mi("Нежная куриная грудка с соусом демиглас","3 990 ₸","Сувид, морковный крем или картофельное пюре, шпинат."),
-    mi("Шницель из цыплёнка с соусом бешамель","4 290 ₸","Хрустящая панировка, свежий огурец и соус из петрушки."),
-    mi("Конские колбаски с картофельным гратеном","7 890 ₸","Зерновая горчица, грибной глейз на портвейне и красном вине."),
-    mi("Говяжьи щёчки по-бургундски","6 990 ₸","Томлёные в винном соусе, картофельное пюре и шампиньоны демигляз."),
-    mi("Чизбургер из мраморной говядины","5 490 ₸","Чеддер, карамелизированный лук, соус релиш, фри или батат фри на выбор."),
-    mi("Запечённая голень индейки с соусом жу из клюквы","6 590 ₸","12 часов томления, морковный крем и зелень."),
-    mi("Стейк из телячьей вырезки под перечным соусом","8 990 ₸","Картофель фри, перчик падрон и аромат трюфеля."),
-    mi("Креветки, вонголе и кальмар в чесночном масле","6 290 ₸","Сливочное масло, каперсы, лимон и хрустящий багет."),
-    mi("Стейк лосося с картофельным пюре и красной икрой","7 890 ₸","Воздушное пюре и кремовый шпинатный соус на бешамеле."),
-    mi("Рибай PRIME","7 590 ₸","Зерновой откорм."),
-    mi("Котлеты из индейки с запечённым картофелем","4 890 ₸","Бриошь и сливки, бейби-картофель, тартар из трёх видов огурца.","New"),
-    mi("Утиная ножка конфи","6 490 ₸","Запечённая тыква, соус жу с клюквой, запечённый чёрный виноград.","New"),
-    mi("Филе дорадо в соусе бёр блан с капустой бок-чой","8 890 ₸","Соус на рыбном бульоне, понзу и сливочном масле, лайм.","New"),
-    mi("Боул с лососем","5 890 ₸","Киноа, слабосолёный лосось, авокадо, цукини, соус понзу.","New"),
-  ],
-  bruschette: [
-    mi("Брускетта с муссом из баклажана и рикоттой","3 290 ₸","Томатная сальса, маринованный перец «слеза», базилик."),
-    mi("Брускетта с ростбифом","4 490 ₸","Крем рикотты, телячья вырезка, луковый мармелад и соус из петрушки."),
-    mi("Брускетта с креветками и страчателлой","4 890 ₸","Гуакамоле, креветки конфи, красножильный щавель."),
-    mi("Брускетта со сливочным сыром и сладким угрём","по запросу","Цитрусовый крем, копчёный угорь, соус унаги и тартар из огурца."),
-  ],
-
-  coffee: [
-    mi("Эспрессо","1 290 ₸"),
-    mi("Американо","1 390 ₸"),
-    miv("Батч брю",[["средний","1 390 ₸"],["большой","1 490 ₸"]]),
-    mi("Флэт уайт","1 690 ₸"),
-    miv("Капучино",[["средний","1 690 ₸"],["большой","1 790 ₸"]]),
-    mi("Латте","1 790 ₸"),
-    mi("Альтернативное молоко","890 ₸","Миндальное · кокосовое · овсяное · фундучное · банановое"),
-    mi("Дополнительное молоко","390 ₸","Коровье молоко"),
-  ],
-  signature: [
-    mi("Мадлен капучино","2 490 ₸","Молоко, эспрессо, сироп мадлен, цитрусовая пудра."),
-    mi("Сырный раф с клубничным вареньем","2 490 ₸"),
-    mi("Матча лаванда-мёд","2 490 ₸"),
-    mi("Cafe du poiré","2 890 ₸","Эспрессо, грушевый домашний ликёр, цитрусовый ликёр, амаро, ванильная пена."),
-    mi("Какао с нутеллой","2 390 ₸"),
-    mi("Чайник горячего шоколада","3 790 ₸"),
-    mi("Колд брю малина-лимон","2 290 ₸"),
-    mi("Айс матча клубника","2 590 ₸"),
-    mi("Матча-тоник манго-персик","2 590 ₸"),
-  ],
-  lemonade: [
-    miv("Цветочный",[["200 мл","1 590 ₸"],["700 мл","3 890 ₸"]]),
-    miv("Сицилийские цитрусы",[["200 мл","1 590 ₸"],["700 мл","3 890 ₸"]]),
-    miv("Щавель-яблоко",[["200 мл","1 590 ₸"],["700 мл","3 890 ₸"]]),
-    miv("Черника-лаванда",[["200 мл","1 590 ₸"],["700 мл","3 890 ₸"]]),
-  ],
-  fresh: [
-    mi("Морковный фреш","1 990 ₸"),
-    mi("Яблочный фреш","2 690 ₸"),
-    mi("Грейпфрутовый фреш","2 990 ₸"),
-    mi("Апельсиновый фреш","2 690 ₸"),
-  ],
-  smoothie: [
-    mi("Ягодный","2 990 ₸","Клубника, малина, голубика, миндальное молоко, топинамбур."),
-    mi("Зелёный","3 290 ₸","Авокадо, шпинат, кокосовая вода, мёд."),
-    mi("Тропический","2 990 ₸","Кокос, личи, ананас, банан."),
-  ],
-  tea: [
-    mi("Ассам","2 190 ₸"), mi("Эрл грей","2 190 ₸"), mi("Сенча","2 190 ₸"),
-    mi("Жасмин","2 190 ₸"), mi("Молочный улун","2 190 ₸"), mi("Дикая вишня","2 190 ₸"),
-    mi("Травяной","2 190 ₸"), mi("Гречишный","2 190 ₸"), mi("Пандановый чай","2 190 ₸"),
-  ],
-  signaturetea: [
-    mi("Грейпфрут-розовый перец-жасмин","2 990 ₸"),
-    mi("Облепиха-маракуйя-ваниль","2 990 ₸"),
-    mi("Смородина-анис-яблоко","2 990 ₸"),
-    mi("Персик-мята-османтус","2 990 ₸"),
-  ],
-  soft: [
-    mi("Coca-Cola Classic","1 290 ₸"),
-    mi("Coca-Cola Zero Sugar","1 290 ₸"),
-    mi("Fanta","1 290 ₸"),
-    mi("Sprite","1 290 ₸"),
-    mi("Schweppes","1 690 ₸"),
-    mi("Тоник Fava","2 790 ₸","200 мл"),
-    mi("Red Bull","2 290 ₸","250 мл"),
-    miv("Сок PAGO",[["стакан","2 490 ₸"],["графин","4 290 ₸"]],"Яблоко · томат · вишня · апельсин"),
-  ],
-  water: [
-    miv("A'su glass",[["still","1 890 ₸"],["sparkling","1 890 ₸"]],"500 мл"),
-    mi("Blue Mont Premium water","2 990 ₸","still / sparkling, 700 мл"),
-    mi("Burabay mineral water","1 890 ₸","500 мл"),
-  ],
-
-  desserts: [
-    mi("Профитроли с ванильным кремом","2 290 ₸","И шоколадным соусом."),
-    mi("Крем-карамель","2 690 ₸"),
-    mi("Трюфель классический","790 ₸"),
-    mi("Трюфель с фисташками","990 ₸"),
-    mi("Картошка с творожным сыром","990 ₸"),
-    mi("Картошка со сгущёнкой","990 ₸"),
-    miv("Эклер с фисташкой",[["маковый","1 890 ₸"],["фисташковый","1 590 ₸"]]),
-    mi("Баскский чизкейк","2 390 ₸"),
-    mi("Шоколадный торт с солью","2 990 ₸"),
-    mi("Тарталетка с малиной","2 790 ₸"),
-    mi("Тарталетка с манго","2 490 ₸"),
-    mi("Тарт с голубикой","3 990 ₸"),
-    mi("Тарт с клубникой","3 990 ₸"),
-    mi("Тарт с малиной","3 990 ₸"),
-    mi("Тарт с карамелью и пеканом","3 290 ₸"),
-    mi("Шоколадная тарталетка с голубикой","2 790 ₸"),
-    mi("Клубничный мусс с фисташками","3 790 ₸"),
-  ],
-  pastry: [
-    mi("Канеле классический","990 ₸"),
-    mi("Канеле с кофейным кремом","990 ₸"),
-    mi("Канеле с фисташками","1 290 ₸"),
-    mi("Бабка с маком","1 290 ₸"),
-    mi("Круассан классический","1 490 ₸"),
-    mi("Круассан с шоколадом","1 890 ₸"),
-    mi("Круассан с карамелью","2 390 ₸"),
-    mi("Круассан с чёрной смородиной","2 490 ₸"),
-    mi("Круассан с миндалем","2 790 ₸"),
-    mi("Круассан с кофе","2 790 ₸"),
-    mi("Пан-о-шоколя","1 790 ₸"),
-    mi("Бантик с облепихой","1 790 ₸"),
-    mi("Карамельная улитка с орехами и изюмом","1 990 ₸"),
-    mi("Краффин с абрикосом","1 790 ₸"),
-    mi("Финансье с лимоном","990 ₸"),
-  ],
-  bread: [
-    mi("Мини-тартин","890 ₸","Подаём с ремесленным маслом."),
-    mi("Тартин","990 ₸"),
-    mi("Багет","890 ₸"),
-    mi("Чёрный хлеб с инжиром","1 490 ₸"),
-  ],
-};
-
-function itemHTML(it){
-  const tag = it.t ? `<span class="tag-new">${it.t}</span>` : '';
-  let rows = '';
-  if(it.v){
-    rows = it.v.map(([label, price]) => `
-      <div class="variant-row">
-        <span>${label}</span><span class="dots"></span><span class="variant-price">${price}</span>
-      </div>`).join('');
-  } else {
-    rows = `<div class="variant-row"><span class="dots" style="margin-left:0"></span><span class="variant-price text-base">${it.p}</span></div>`;
-  }
-  return `
-    <div class="menu-item">
-      <h4 class="item-name">${it.n}${tag}</h4>
-      ${it.d ? `<p class="item-desc">${it.d}</p>` : ''}
-      ${rows}
-    </div>`;
-}
-
-Object.keys(DATA).forEach(key => {
-  const el = document.getElementById('p-' + key);
-  if(el) el.innerHTML = DATA[key].map(itemHTML).join('');
-});
-
-/* ============ TAB LOGIC ============ */
-const groupBtns = document.querySelectorAll('[data-group-btn]');
-const catBars = document.querySelectorAll('.cat-bar');
-const menuPanels = document.querySelectorAll('.menu-panel');
-
-groupBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    const g = btn.dataset.groupBtn;
-    groupBtns.forEach(b => b.dataset.active = (b === btn) ? 'true' : 'false');
-    catBars.forEach(bar => bar.classList.toggle('hidden', bar.dataset.group !== g));
-    catBars.forEach(bar => bar.classList.toggle('flex', bar.dataset.group === g));
-    menuPanels.forEach(p => p.classList.toggle('hidden', p.dataset.group !== g));
-  });
-});
-
-document.querySelectorAll('.cat-pill').forEach(pill => {
-  pill.addEventListener('click', () => {
-    const bar = pill.closest('.cat-bar');
-    const group = bar.dataset.group;
-    const cat = pill.dataset.cat;
-    bar.querySelectorAll('.cat-pill').forEach(p => p.dataset.active = (p === pill) ? 'true' : 'false');
-    const panelGroup = document.querySelector(`.menu-panel[data-group="${group}"]`);
-    panelGroup.querySelectorAll('.panel').forEach(panel => {
-      panel.dataset.visible = (panel.dataset.cat === cat) ? 'true' : 'false';
-    });
-  });
-});
-
-/* ============ MOBILE MENU ============ */
-const burger = document.getElementById('burger');
-const mobileMenu = document.getElementById('mobileMenu');
-burger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
-mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
-
-/* ============ LENIS SMOOTH SCROLL ============ */
-const lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
-function raf(time){ lenis.raf(time); requestAnimationFrame(raf); }
-requestAnimationFrame(raf);
-lenis.on('scroll', ScrollTrigger.update);
-gsap.ticker.add((time) => { lenis.raf(time * 1000); });
-gsap.ticker.lagSmoothing(0);
-
-gsap.registerPlugin(ScrollTrigger);
-
-/* ============ HERO SPLIT-TYPE REVEAL ============ */
-window.addEventListener('load', () => {
-  const split1 = new SplitType('#heroLine1', { types: 'chars' });
-  const split2 = new SplitType('#heroLine2', { types: 'chars' });
-  gsap.set([split1.chars, split2.chars], { yPercent: 120, opacity: 0 });
-
-  const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
-  tl.to(split1.chars, { yPercent: 0, opacity: 1, duration: 1, stagger: 0.035 })
-    .to(split2.chars, { yPercent: 0, opacity: 1, duration: 1, stagger: 0.035 }, '-=0.75')
-    .to('#heroKicker', { opacity: 1, duration: 0.9 }, '-=0.9')
-    .to('#heroFoot', { opacity: 1, duration: 0.9 }, '-=0.6')
-    .fromTo('#heroImg', { scale: 1.15 }, { scale: 1.02, duration: 2.2, ease: 'power2.out' }, 0);
-});
-
-/* ============ SCROLL REVEALS ============ */
-gsap.utils.toArray('.reveal-up').forEach(el => {
-  gsap.fromTo(el, { y: 50, opacity: 0 }, {
-    y: 0, opacity: 1, duration: 1, ease: 'power3.out',
-    scrollTrigger: { trigger: el, start: 'top 88%' }
-  });
-});
-
-/* image parallax scale-in for atmosphere + hero */
-gsap.utils.toArray('.img-mask img').forEach(img => {
-  gsap.fromTo(img, { scale: 1.22 }, {
-    scale: 1, ease: 'none',
-    scrollTrigger: { trigger: img, start: 'top bottom', end: 'bottom top', scrub: 1 }
-  });
-});
-
-/* menu items stagger reveal per panel */
-document.querySelectorAll('.panel [id^="p-"]').forEach(grid => {
-  gsap.fromTo(grid.children, { y: 24, opacity: 0 }, {
-    y: 0, opacity: 1, duration: 0.7, stagger: 0.05, ease: 'power2.out',
-    scrollTrigger: { trigger: grid, start: 'top 92%' }
-  });
-});
-
-/* ============ SIGNATURE: SWALLOW FLIGHT LINE ============ */
-gsap.to('#flightBird', {
-  top: '86vh',
-  ease: 'none',
-  scrollTrigger: {
-    trigger: document.documentElement,
-    start: 'top top',
-    end: 'bottom bottom',
-    scrub: 0.6
-  }
-});
-gsap.to('#flightBird', {
-  rotation: 8, yoyo: true, repeat: -1, duration: 1.6, ease: 'sine.inOut'
-});
-
-ScrollTrigger.refresh();
-</script>
+<script src="assets_data.js"></script>
+<script src="menu-data.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
